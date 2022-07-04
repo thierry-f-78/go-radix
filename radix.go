@@ -206,7 +206,8 @@ func insert(r *Radix, message *[]byte, length int, data *interface{})(*interface
 
 	/* Create leaf node */
 	leaf = &Node{}
-	leaf.Bytes = *message
+	leaf.Bytes = make([]byte, len(*message))
+	copy(leaf.Bytes, *message)
 	leaf.Start = 0
 	leaf.End = length - 1
 	leaf.Parent = nil
@@ -329,7 +330,8 @@ func insert(r *Radix, message *[]byte, length int, data *interface{})(*interface
 
 	/* create new node */
 	newnode = &Node{}
-	newnode.Bytes = *message
+	newnode.Bytes = make([]byte, len(*message))
+	copy(newnode.Bytes, *message)
 	newnode.Start = node.Start
 	newnode.End = bitno - 1
 	newnode.Parent = node.Parent
