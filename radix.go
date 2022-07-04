@@ -99,7 +99,6 @@ func lookup_longuest_all_match(r *Radix, data *[]byte, length int)([]*Node) {
 	}
 }
 
-var depth int = 0
 func lookup_longuest_last_match(r *Radix, data *[]byte, length int)(*Node) {
 	var node *Node
 	var last_node *Node
@@ -144,6 +143,18 @@ func lookup_longuest_last_match(r *Radix, data *[]byte, length int)(*Node) {
 			node = node.Left
 		}
 	}
+}
+
+func lookup_longuest_exact_match(r *Radix, data *[]byte, length int)(*Node) {
+	var n *Node
+	n = lookup_longuest_last_match(r, data, length)
+	if n == nil {
+		return nil
+	}
+	if n.End + 1 != length {
+		return nil
+	}
+	return n
 }
 
 func lookup_longuest_last_node(r *Radix, data *[]byte, length int)(*Node) {

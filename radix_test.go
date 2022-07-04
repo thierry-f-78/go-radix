@@ -193,7 +193,6 @@ func Benchmark_Radix(t *testing.B) {
 	/* perform random lookup to bench algo */
 
 	now = time.Now()
-	depth = 0
 	hit = 0
 	miss = 0
 	for i = 0; i < rounds; i++ {
@@ -208,9 +207,7 @@ func Benchmark_Radix(t *testing.B) {
 	step = time.Now()
 	d := step.Sub((now)).Seconds()
 	fmt.Printf("Generate %d lookup in %fs with %d hit, %d miss\n", rounds, d, hit, miss)
-	fmt.Printf("Mean depth %d / 1000000 = %f\n", depth, float64(depth) / 1000000.0)
 	fmt.Printf("Mean time %f / 1000000 = %fns\n", d, d * 1000.0)
-	fmt.Printf("Mean time per depth %f / 1000000 / %f = %fns\n", d, float64(depth) / 1000000.0, d * 1000.0 / (float64(depth) / 1000000.0))
 
 	/* perform full scan */
 

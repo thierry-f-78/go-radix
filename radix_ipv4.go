@@ -4,65 +4,91 @@ package radix
 
 import "net"
 
-func (r *Radix)IPv4LookupLonguest(network *net.IPNet)([]*interface{}) {
-	var node *Node
+func network_to_key(network *net.IPNet)([]byte, int) {
 	var length int
-	var message []byte
 
 	/* Get the network width. width of 0 id prohibited */
 	length, _ = network.Mask.Size()
-	if length == 0 {
-		return nil
-	}
-
-	/* Get IP and convert it to byte array */
-	message = []byte(network.IP)
-
-	/* Perform lookup */
-	node = lookup_longuest_last_match(r, &message, length)
-	if node == nil {
-		return nil
-	}
-	return node.Data
+	return []byte(network.IP), length
 }
 
-func (r *Radix)IPv4LookupLonguestPath(network *net.IPNet)([][]*interface{}) {
-	var nodes []*Node
-	var data [][]*interface{}
-	var index int
+func (r *Radix)IPv4LookupLonguest(network *net.IPNet)(*Node) {
 	var length int
-	var message []byte
+	var key []byte
 
 	/* Get the network width. width of 0 id prohibited */
-	length, _ = network.Mask.Size()
+	key, length = network_to_key(network)
 	if length == 0 {
-		return make([][]*interface{}, 0)
+		return nil
 	}
-
-	/* Get IP and convert it to byte array */
-	message = []byte(network.IP)
 
 	/* Perform lookup */
-	nodes = lookup_longuest_all_match(r, &message, length)
-	for index, _ = range nodes {
-		data = append(data, nodes[index].Data)
+	return lookup_longuest_last_match(r, &key, length)
+}
+
+func (r *Radix)IPv4LookupLonguestPath(network *net.IPNet)([]*Node) {
+	var length int
+	var key []byte
+
+	/* Get the network width. width of 0 id prohibited */
+	key, length = network_to_key(network)
+	if length == 0 {
+		return make([]*Node, 0)
 	}
 
-	return data
+	/* Perform lookup */
+	return lookup_longuest_all_match(r, &key, length)
+}
+
+func (r *Radix)IPv4Get(network *net.IPNet)(*Node) {
+	var length int
+	var key []byte
+
+	/* Get the network width. width of 0 id prohibited */
+	key, length = network_to_key(network)
+	if length == 0 {
+		return nil
+	}
+
+	/* Perform lookup */
+	return lookup_longuest_exact_match(r, &key, length)
 }
 
 func (r *Radix)IPv4Insert(network *net.IPNet, data *interface{})(*interface{}) {
 	var length int
-	var message []byte
+	var key []byte
 
 	/* Get the network width. width of 0 id prohibited */
-	length, _ = network.Mask.Size()
+	key, length = network_to_key(network)
 	if length == 0 {
 		return nil
 	}
 
-	/* Get IP and convert it to byte array */
-	message = []byte(network.IP)
+	/* Perform insert */
+	return insert(r, &key, length, data)
+}
 
-	return insert(r, &message, length, data)
+func (r *Radix)IPv4DeleteNetwork(network *net.IPNet)() {
+	var node *Node
+	var length int
+	var key []byte
+
+	/* Get the network width. width of 0 id prohibited */
+	key, length = network_to_key(network)
+	if length == 0 {
+		return
+	}
+
+	/* Perform lookup */
+	node = lookup_longuest_exact_match(r, &key, length)
+	if node == nil {
+		return
+	}
+
+	/* Delete entry */
+	del(r, node)
+}
+
+func (r *Radix)IPv4Delete(n *Node)() {
+	del(r, n)
 }
