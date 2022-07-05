@@ -580,6 +580,9 @@ func (radix *Radix)NewIter(key *[]byte, length int, forward bool)(*Iter) {
 		i.next_node = radix.Node
 	} else {
 		i.next_node = lookup_longuest_last_node(radix, key, length)
+		if i.next_node != nil && !is_children_of(&i.next_node.Bytes, i.key, i.next_node.End, i.length - 1) {
+			i.next_node = nil
+		}
 	}
 
 	/* No nodes found, next node is nil, abort iteration */

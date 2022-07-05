@@ -315,3 +315,47 @@ func Benchmark_Radix(t *testing.B) {
 	step = time.Now()
 	fmt.Printf("Delete %d data in %fs\n", count, step.Sub((now)).Seconds())
 }
+
+func Test_Radix(t *testing.T) {
+	var r *Radix
+	var ipn *net.IPNet
+	var it *Iter
+	var n *Node
+
+	/* Check error case */
+
+	r = NewRadix(true)
+
+	ipn = &net.IPNet{}
+	ipn.IP = net.ParseIP("192.168.0.0")
+	ipn.Mask = net.CIDRMask(16, 32)
+	r.IPv4Insert(ipn, "Network 192.168.0.0/16")
+
+	ipn = &net.IPNet{}
+	ipn.IP = net.ParseIP("10.0.0.0")
+	ipn.Mask = net.CIDRMask(8, 32)
+	it = r.IPv4NewIter(ipn, true)
+	for it.Next() {
+		n = it.Get()
+		t.Errorf("Case: we have one entry in the tree, initiate browsing on unconcerned network, " +
+		         "expect 0 iteration. Got one entry: %s", n.String())
+	}
+
+	ipn = &net.IPNet{}
+	ipn.IP = net.ParseIP("10.0.0.0")
+	ipn.Mask = net.CIDRMask(8, 32)
+	r.IPv4Insert(ipn, "Network 10.0.0.0/8")
+
+	ipn = &net.IPNet{}
+	ipn.IP = net.ParseIP("10.0.0.0")
+	ipn.Mask = net.CIDRMask(8, 32)
+	it = r.IPv4NewIter(ipn, true)
+	n = nil
+	for it.Next() {
+		if n != nil {
+			t.Errorf("Case: we have two entries in the tree, initiate browsing on concerned " +
+			         "network, expect 1 iteration. Got at least two")
+		}
+		n = it.Get()
+	}
+}
