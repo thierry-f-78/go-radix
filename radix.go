@@ -439,7 +439,7 @@ func (r *Radix)Delete(n *Node) {
  *           \  /
  *            ()
  */
-func next(n *Node)(*Node) {
+func (n *Node)Next()(*Node) {
 	var prev *Node
 	for {
 		if prev == n.Parent || prev == nil {
@@ -482,7 +482,7 @@ func next(n *Node)(*Node) {
 	}
 }
 
-func prev(n *Node)(*Node) {
+func (n *Node)Prev()(*Node) {
 	var prev *Node
 	for {
 		if prev == n.Parent || prev == nil {
@@ -525,14 +525,14 @@ func prev(n *Node)(*Node) {
 	}
 }
 
-func first(r *Radix)(*Node) {
+func (r *Radix)First()(*Node) {
 	var n *Node
 
 	if r.Node == nil {
 		return nil
 	}
 
-	n = next(r.Node)
+	n = r.Node.Next()
 	if n == nil {
 		if r.Node.Data != nil {
 			return r.Node
@@ -542,14 +542,14 @@ func first(r *Radix)(*Node) {
 	return n
 }
 
-func last(r *Radix)(*Node) {
+func (r *Radix)Last()(*Node) {
 	var n *Node
 
 	if r.Node == nil {
 		return nil
 	}
 
-	n = prev(r.Node)
+	n = r.Node.Prev()
 	if n == nil {
 		if r.Node.Data != nil {
 			return r.Node
@@ -603,9 +603,9 @@ func (i *Iter)set_next()() {
 		return
 	}
 	if i.forward {
-		i.next_node = next(i.next_node)
+		i.next_node = i.next_node.Next()
 	} else {
-		i.next_node = prev(i.next_node)
+		i.next_node = i.next_node.Prev()
 	}
 	if i.next_node == nil {
 		return
