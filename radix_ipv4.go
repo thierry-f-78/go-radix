@@ -9,7 +9,7 @@ func network_to_key(network *net.IPNet)([]byte, int) {
 
 	/* Get the network width. width of 0 id prohibited */
 	length, _ = network.Mask.Size()
-	return []byte(network.IP), length
+	return []byte(network.IP.To4()), length
 }
 
 func (r *Radix)IPv4LookupLonguest(network *net.IPNet)(*Node) {
