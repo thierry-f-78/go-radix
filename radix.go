@@ -370,7 +370,7 @@ func insert(r *Radix, message *[]byte, length int, data interface{})(interface{}
 	return data
 }
 
-func del(r *Radix, n *Node) {
+func (r *Radix)Delete(n *Node) {
 	var p *Node
 	var c *Node
 
@@ -426,7 +426,7 @@ func del(r *Radix, n *Node) {
 		}
 
 		/* Remove the parent node */
-		del(r, p)
+		r.Delete(p)
 	}
 }
 

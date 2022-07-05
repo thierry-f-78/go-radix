@@ -86,11 +86,7 @@ func (r *Radix)IPv4DeleteNetwork(network *net.IPNet)() {
 	}
 
 	/* Delete entry */
-	del(r, node)
-}
-
-func (r *Radix)IPv4Delete(n *Node)() {
-	del(r, n)
+	r.Delete(node)
 }
 
 func (n *Node)IPv4GetNet()(* net.IPNet) {

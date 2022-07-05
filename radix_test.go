@@ -309,7 +309,7 @@ func Benchmark_Radix(t *testing.B) {
 	it = r.NewIter(&key, ml, true)
 	for it.Next() {
 		node = it.Get()
-		del(r, node)
+		r.Delete(node)
 		count++
 	}
 	step = time.Now()
