@@ -12,7 +12,7 @@ type Node struct {
 	Parent *Node
 	Left *Node
 	Right *Node
-	Data []*interface{} /* Conatins the list of interface matching the node */
+	Data []interface{} /* Conatins the list of interface matching the node */
 }
 
 type Radix struct {
@@ -190,7 +190,7 @@ func lookup_longuest_last_node(r *Radix, data *[]byte, length int)(*Node) {
 	}
 }
 
-func insert(r *Radix, message *[]byte, length int, data *interface{})(*interface{}) {
+func insert(r *Radix, message *[]byte, length int, data interface{})(interface{}) {
 	var leaf *Node
 	var node *Node
 	var newnode *Node
