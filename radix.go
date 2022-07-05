@@ -293,8 +293,12 @@ func insert(r *Radix, message *[]byte, length int, data interface{})(interface{}
 		 * INSERT-KEY 0101 / 4
 		 * STOP-NODE  010111 / 6
 		 */
+		if node.Parent != nil {
+			leaf.Start = node.Parent.End + 1
+		}
 		leaf.Parent = node.Parent
 		node.Parent = leaf
+		node.Start = leaf.End + 1
 
 		/* Append existing nodes */
 		if bitget(&node.Bytes, bitno) == 1 {
