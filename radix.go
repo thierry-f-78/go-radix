@@ -559,7 +559,7 @@ func last(r *Radix)(*Node) {
 	return n
 }
 
-type iter struct {
+type Iter struct {
 	node *Node
 	next_node *Node
 	key *[]byte
@@ -567,10 +567,10 @@ type iter struct {
 	forward bool
 }
 
-func new_iter(radix *Radix, key *[]byte, length int, forward bool)(*iter) {
-	var i *iter
+func (radix *Radix)NewIter(key *[]byte, length int, forward bool)(*Iter) {
+	var i *Iter
 
-	i = &iter{}
+	i = &Iter{}
 	i.key = key
 	i.length = length
 	i.forward = forward
@@ -598,7 +598,7 @@ func new_iter(radix *Radix, key *[]byte, length int, forward bool)(*iter) {
 	return i
 }
 
-func (i *iter)set_next()() {
+func (i *Iter)set_next()() {
 	if i.next_node == nil {
 		return
 	}
@@ -615,12 +615,12 @@ func (i *iter)set_next()() {
 	}
 }
 
-func (i *iter)next()(bool) {
+func (i *Iter)Next()(bool) {
 	i.node = i.next_node
 	i.set_next()
 	return i.node != nil
 }
 
-func (i *iter)get()(*Node) {
+func (i *Iter)Get()(*Node) {
 	return i.node
 }

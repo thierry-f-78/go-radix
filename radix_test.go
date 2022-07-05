@@ -279,7 +279,7 @@ func Benchmark_Radix(t *testing.B) {
 
 	/* Returrn all cildrens of key 255.255.224.0/20 */
 
-	var it *iter
+	var it *Iter
 	var key []byte
 	var ml int
 
@@ -290,9 +290,9 @@ func Benchmark_Radix(t *testing.B) {
 
 	ip3.IP = net.IP(key)
 	ip3.Mask = net.CIDRMask(ml, 32)
-	it = new_iter(r, &key, ml, true)
-	for it.next() {
-		node = it.get()
+	it = r.NewIter(&key, ml, true)
+	for it.Next() {
+		node = it.Get()
 		b = node.Bytes
 		for len(b) < 4 {
 			b = append([]byte{0x00}, b...)
@@ -306,9 +306,9 @@ func Benchmark_Radix(t *testing.B) {
 	key = []byte{}
 	ml = 0
 	now = time.Now()
-	it = new_iter(r, &key, ml, true)
-	for it.next() {
-		node = it.get()
+	it = r.NewIter(&key, ml, true)
+	for it.Next() {
+		node = it.Get()
 		del(r, node)
 		count++
 	}
