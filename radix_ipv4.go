@@ -92,3 +92,13 @@ func (r *Radix)IPv4DeleteNetwork(network *net.IPNet)() {
 func (r *Radix)IPv4Delete(n *Node)() {
 	del(r, n)
 }
+
+func (n *Node)IPv4GetNet()(* net.IPNet) {
+	var network *net.IPNet
+
+	network = &net.IPNet{}
+	network.Mask = net.CIDRMask(n.End + 1, 32)
+	network.IP = net.IP(n.Bytes).Mask(network.Mask)
+
+	return network
+}
