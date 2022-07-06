@@ -61,42 +61,42 @@ func TestRadix(t *testing.T) {
 
 	println("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz")
 	b = []byte{0x00, 0x00, 0x00, 0b00010101}
-	insert(r, b, 32, nil)
+	r.Insert(b, 32, nil)
 	display_radix(r)
 
 	println("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz")
 	b = []byte{0x00, 0x00, 0x00, 0b00010011}
-	insert(r, b, 32, nil)
+	r.Insert(b, 32, nil)
 	display_radix(r)
 
 	println("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz")
 	b = []byte{0x00, 0x00, 0x00, 0b00010000}
-	insert(r, b, 29, nil)
+	r.Insert(b, 29, nil)
 	display_radix(r)
 
 	println("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz")
 	b = []byte{0x00, 0x00, 0x00, 0b00000101}
-	insert(r, b, 32, nil)
+	r.Insert(b, 32, nil)
 	display_radix(r)
 
 	println("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz")
 	b = []byte{0x00, 0x00, 0x00, 0b00000101}
-	insert(r, b, 32, nil)
+	r.Insert(b, 32, nil)
 	display_radix(r)
 
 	println("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz")
 	b = []byte{0x00, 0x00, 0x00, 0b00001100}
-	insert(r, b, 30, nil)
+	r.Insert(b, 30, nil)
 	display_radix(r)
 
 	println("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz")
 	b = []byte{0x00, 0x00, 0x00, 0b00001100}
-	insert(r, b, 32, nil)
+	r.Insert(b, 32, nil)
 	display_radix(r)
 
 	println("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz")
 	b = []byte{0x00, 0x00, 0x00, 0b00001000}
-	insert(r, b, 29, nil)
+	r.Insert(b, 29, nil)
 	display_radix(r)
 
 	println("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz")
@@ -175,7 +175,7 @@ func Benchmark_Radix(t *testing.B) {
 
 	now = time.Now()
 	for _, ent = range list {
-		insert(r, &ent.b, ent.l, nil)
+		r.Insert(&ent.b, ent.l, nil)
 	}
 	step = time.Now()
 	fmt.Printf("Index %d entries in %fs\n", count, step.Sub((now)).Seconds())

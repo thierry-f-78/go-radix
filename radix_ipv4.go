@@ -65,7 +65,7 @@ func (r *Radix)IPv4Insert(network *net.IPNet, data interface{})(*Node, bool) {
 	}
 
 	/* Perform insert */
-	return insert(r, &key, length, data)
+	return r.Insert(&key, length, data)
 }
 
 func (r *Radix)IPv4DeleteNetwork(network *net.IPNet)() {

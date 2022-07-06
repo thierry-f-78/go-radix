@@ -189,7 +189,7 @@ func lookup_longuest_last_node(r *Radix, data *[]byte, length int)(*Node) {
 }
 
 /* Return nil is node is inserted, otherwise return existing node */
-func insert(r *Radix, key *[]byte, length int, data interface{})(*Node, bool) {
+func (r *Radix)Insert(key *[]byte, length int, data interface{})(*Node, bool) {
 	var leaf *Node
 	var node *Node
 	var newnode *Node
