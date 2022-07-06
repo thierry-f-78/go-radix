@@ -190,7 +190,7 @@ func lookup_longuest_last_node(r *Radix, data *[]byte, length int)(*Node) {
 	}
 }
 
-func insert(r *Radix, message *[]byte, length int, data interface{})(interface{}) {
+func insert(r *Radix, key *[]byte, length int, data interface{})(interface{}) {
 	var leaf *Node
 	var node *Node
 	var newnode *Node
@@ -202,12 +202,12 @@ func insert(r *Radix, message *[]byte, length int, data interface{})(interface{}
 	}
 
 	/* Browse tree and return the closest node */
-	node = lookup_longuest_last_node(r, message, length)
+	node = lookup_longuest_last_node(r, key, length)
 
 	/* Create leaf node */
 	leaf = &Node{}
-	leaf.Bytes = make([]byte, len(*message))
-	copy(leaf.Bytes, *message)
+	leaf.Bytes = make([]byte, len(*key))
+	copy(leaf.Bytes, *key)
 	leaf.Start = 0
 	leaf.End = length - 1
 	leaf.Parent = nil
@@ -225,7 +225,7 @@ func insert(r *Radix, message *[]byte, length int, data interface{})(interface{}
 	}
 
 	/* The last node exact match the new entry */
-	if bitcmp(message, &node.Bytes, node.Start, node.End) {
+	if bitcmp(key, &node.Bytes, node.Start, node.End) {
 
 		/* CASE #2
 		 *
@@ -267,7 +267,7 @@ func insert(r *Radix, message *[]byte, length int, data interface{})(interface{}
 		 */
 		leaf.Start = node.End + 1
 		leaf.Parent = node
-		if bitget(message, node.End + 1) == 1 {
+		if bitget(key, node.End + 1) == 1 {
 			node.Right = leaf
 		} else {
 			node.Left = leaf
@@ -281,7 +281,7 @@ func insert(r *Radix, message *[]byte, length int, data interface{})(interface{}
 	} else {
 		l = node.End
 	}
-	bitno = bitlonguestmatch(message, &node.Bytes, node.Start, l)
+	bitno = bitlonguestmatch(key, &node.Bytes, node.Start, l)
 	if bitno == -1 {
 
 		/* CASE #4
@@ -350,7 +350,7 @@ func insert(r *Radix, message *[]byte, length int, data interface{})(interface{}
 	leaf.Parent = newnode
 
 	/* Append existing nodes */
-	if bitget(message, bitno) == 1 {
+	if bitget(key, bitno) == 1 {
 		newnode.Right = leaf
 		newnode.Left = node
 	} else {
