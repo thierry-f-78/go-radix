@@ -16,7 +16,7 @@ func TestRadixIPv4(t *testing.T) {
 
 	/* Init DB */
 
-	r = NewRadix(true)
+	r = NewRadix()
 
 	/* Insert network */
 
@@ -35,7 +35,7 @@ func TestRadixIPv4(t *testing.T) {
 	if !nw2.IP.Equal(nw1.IP) {
 		t.Errorf("Should match")
 	}
-	s = n.Data[0].(string)
+	s = n.Data.(string)
 	if s != "test - 10.4.0.0/16" {
 		t.Errorf("Should match")
 	}
@@ -54,7 +54,7 @@ func TestRadixIPv4(t *testing.T) {
 	if !nw2.IP.Equal(nw1.IP) {
 		t.Errorf("Should match")
 	}
-	s = n.Data[0].(string)
+	s = n.Data.(string)
 	if s != "test - 10.4.0.0/16" {
 		t.Errorf("Should match")
 	}
@@ -80,7 +80,7 @@ func TestRadixIPv4(t *testing.T) {
 	if !nw2.IP.Equal(nw1.IP) {
 		t.Errorf("Should match")
 	}
-	s = n.Data[0].(string)
+	s = n.Data.(string)
 	if s != "test - 10.4.0.0/16" {
 		t.Errorf("Should match")
 	}
@@ -100,7 +100,7 @@ func TestRadixIPv4(t *testing.T) {
 	if !nw2.IP.Equal(nw2.IP) {
 		t.Errorf("Should match")
 	}
-	s = ns[0].Data[0].(string)
+	s = ns[0].Data.(string)
 	if s != "test - 10.0.0.0/8" {
 		t.Errorf("Should match")
 	}
@@ -109,7 +109,7 @@ func TestRadixIPv4(t *testing.T) {
 	if !nw2.IP.Equal(nw2.IP) {
 		t.Errorf("Should match")
 	}
-	s = ns[1].Data[0].(string)
+	s = ns[1].Data.(string)
 	if s != "test - 10.4.0.0/16" {
 		t.Errorf("Should match")
 	}

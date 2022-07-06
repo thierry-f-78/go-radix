@@ -134,7 +134,7 @@ func Benchmark_Radix(t *testing.B) {
 	var hit int
 	var miss int
 
-	r = NewRadix(true)
+	r = NewRadix()
 
 	/* Load file data/ip.db */
 
@@ -324,7 +324,7 @@ func Test_Radix(t *testing.T) {
 
 	/* Check error case */
 
-	r = NewRadix(true)
+	r = NewRadix()
 
 	ipn = &net.IPNet{}
 	ipn.IP = net.ParseIP("192.168.0.0")

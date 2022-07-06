@@ -54,14 +54,14 @@ func (r *Radix)IPv4Get(network *net.IPNet)(*Node) {
 	return lookup_longuest_exact_match(r, &key, length)
 }
 
-func (r *Radix)IPv4Insert(network *net.IPNet, data interface{})(interface{}) {
+func (r *Radix)IPv4Insert(network *net.IPNet, data interface{})(*Node, bool) {
 	var length int
 	var key []byte
 
 	/* Get the network width. width of 0 id prohibited */
 	key, length = network_to_key(network)
 	if length == 0 {
-		return nil
+		return nil, false
 	}
 
 	/* Perform insert */

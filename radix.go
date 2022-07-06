@@ -12,19 +12,17 @@ type Node struct {
 	Parent *Node
 	Left *Node
 	Right *Node
-	Data []interface{} /* Conatins the list of interface matching the node */
+	Data interface{} /* Conatins the list of interface matching the node */
 }
 
 type Radix struct {
 	Node *Node
-	Unique bool
 }
 
-func NewRadix(unique bool)(*Radix) {
+func NewRadix()(*Radix) {
 	var radix *Radix
 
 	radix = &Radix{}
-	radix.Unique = unique
 
 	return radix
 }
@@ -190,7 +188,8 @@ func lookup_longuest_last_node(r *Radix, data *[]byte, length int)(*Node) {
 	}
 }
 
-func insert(r *Radix, key *[]byte, length int, data interface{})(interface{}) {
+/* Return nil is node is inserted, otherwise return existing node */
+func insert(r *Radix, key *[]byte, length int, data interface{})(*Node, bool) {
 	var leaf *Node
 	var node *Node
 	var newnode *Node
@@ -198,7 +197,7 @@ func insert(r *Radix, key *[]byte, length int, data interface{})(interface{}) {
 	var l int
 
 	if length == 0 {
-		return nil
+		return nil, false
 	}
 
 	/* Browse tree and return the closest node */
@@ -213,7 +212,7 @@ func insert(r *Radix, key *[]byte, length int, data interface{})(interface{}) {
 	leaf.Parent = nil
 	leaf.Left = nil
 	leaf.Right = nil
-	leaf.Data = append(leaf.Data, data)
+	leaf.Data = data
 
 	/* CASE #1
 	 *
@@ -221,7 +220,7 @@ func insert(r *Radix, key *[]byte, length int, data interface{})(interface{}) {
 	 */
 	if node == nil {
 		r.Node = leaf
-		return data
+		return leaf, true
 	}
 
 	/* The last node exact match the new entry */
@@ -240,18 +239,18 @@ func insert(r *Radix, key *[]byte, length int, data interface{})(interface{}) {
 
 			/* Not a leaf, convert it */
 			if node.Data != nil {
-				node.Data = append(node.Data, data)
-				return data
+				node.Data = data
+				return node, true
 			}
 
 			/* Unique mode is active and the data is set, return stored data */
-			if r.Unique && node.Data != nil && len(node.Data) == 1 {
-				return node.Data[0]
+			if node.Data != nil {
+				return node, false
 			}
 
 			/* append data */
-			node.Data = append(node.Data, data)
-			return data
+			node.Data = data
+			return node, true
 		}
 
 		/* CASE #3
@@ -272,7 +271,7 @@ func insert(r *Radix, key *[]byte, length int, data interface{})(interface{}) {
 		} else {
 			node.Left = leaf
 		}
-		return data
+		return leaf, true
 	}
 
 	/* Match the longuest part in the key */
@@ -318,7 +317,7 @@ func insert(r *Radix, key *[]byte, length int, data interface{})(interface{}) {
 			leaf.Parent.Right = leaf
 		}
 
-		return data
+		return leaf, true
 	}
 
 	/* CASE #5
@@ -334,8 +333,8 @@ func insert(r *Radix, key *[]byte, length int, data interface{})(interface{}) {
 
 	/* create new node */
 	newnode = &Node{}
-	newnode.Bytes = make([]byte, len(*message))
-	copy(newnode.Bytes, *message)
+	newnode.Bytes = make([]byte, len(*key))
+	copy(newnode.Bytes, *key)
 	newnode.Start = node.Start
 	newnode.End = bitno - 1
 	newnode.Parent = node.Parent
@@ -367,7 +366,7 @@ func insert(r *Radix, key *[]byte, length int, data interface{})(interface{}) {
 		newnode.Parent.Right = newnode
 	}
 
-	return data
+	return leaf, true
 }
 
 func (r *Radix)Delete(n *Node) {
