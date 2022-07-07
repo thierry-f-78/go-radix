@@ -224,7 +224,7 @@ func (r *Radix)Insert(key *[]byte, length int, data interface{})(*Node, bool) {
 	}
 
 	/* The last node exact match the new entry */
-	if bitcmp(key, &node.Bytes, node.Start, node.End) {
+	if length > node.End && bitcmp(key, &node.Bytes, node.Start, node.End) {
 
 		/* CASE #2
 		 *
