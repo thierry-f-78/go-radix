@@ -339,3 +339,32 @@ func Test_Radix(t *testing.T) {
 		n = it.Get()
 	}
 }
+
+func Test_Equal(t *testing.T) {
+	var n1 Node
+	var n2 Node
+
+	/* test equal */
+	n1.Bytes = []byte{0,0,0,0}
+	n1.Start = 0
+	n1.End = 31
+
+	n2.Bytes = []byte{0,0,0,0}
+	n2.Start = 0
+	n2.End = 31
+
+	if !Equal(&n1, &n2) {
+		t.Errorf("Should be equal")
+	}
+
+	n2.End = 30
+	if Equal(&n1, &n2) {
+		t.Errorf("Should be different")
+	}
+
+	n2.Bytes[2] = 1
+	n2.End = 31
+	if Equal(&n1, &n2) {
+		t.Errorf("Should be different")
+	}
+}

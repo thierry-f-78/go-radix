@@ -27,6 +27,14 @@ func NewRadix()(*Radix) {
 	return radix
 }
 
+/* Return true if nodes are equal */
+func Equal(n1 *Node, n2 *Node)(bool) {
+	if n1.End != n2.End {
+		return false
+	}
+	return bitcmp(&n1.Bytes, &n2.Bytes, 0, n1.End)
+}
+
 /* Print node value */
 func (n *Node)String()(string) {
 	var out string
