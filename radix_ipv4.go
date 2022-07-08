@@ -99,10 +99,10 @@ func (n *Node)IPv4GetNet()(* net.IPNet) {
 	return network
 }
 
-func (r *Radix)IPv4NewIter(network *net.IPNet, forward bool)(*Iter) {
+func (r *Radix)IPv4NewIter(network *net.IPNet)(*Iter) {
 	var length int
 	var key []byte
 
 	key, length = network_to_key(network)
-	return r.NewIter(&key, length, forward)
+	return r.NewIter(&key, length)
 }

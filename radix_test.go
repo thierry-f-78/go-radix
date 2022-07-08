@@ -229,26 +229,6 @@ func Benchmark_Radix(t *testing.B) {
 	step = time.Now()
 	fmt.Printf("Dump all data in %fs\n", step.Sub((now)).Seconds())
 
-	/* Perform revser scan */
-
-	now = time.Now()
-	node = r.Node
-	for {
-		node = node.Prev()
-		if node == nil {
-			break
-		}
-		b = node.Bytes
-		for len(b) < 4 {
-			b = append([]byte{0x00}, b...)
-		}
-		ip2.IP = net.IP(b)
-		ip2.Mask = net.CIDRMask(node.End + 1, 32)
-//		fmt.Printf("%s\n", ip2.String())
-	}
-	step = time.Now()
-	fmt.Printf("Dump all data in %fs\n", step.Sub((now)).Seconds())
-
 	/* Return first entry */
 
 	node = r.First()
@@ -290,7 +270,7 @@ func Benchmark_Radix(t *testing.B) {
 
 	ip3.IP = net.IP(key)
 	ip3.Mask = net.CIDRMask(ml, 32)
-	it = r.NewIter(&key, ml, true)
+	it = r.NewIter(&key, ml)
 	for it.Next() {
 		node = it.Get()
 		b = node.Bytes
@@ -306,7 +286,7 @@ func Benchmark_Radix(t *testing.B) {
 	key = []byte{}
 	ml = 0
 	now = time.Now()
-	it = r.NewIter(&key, ml, true)
+	it = r.NewIter(&key, ml)
 	for it.Next() {
 		node = it.Get()
 		r.Delete(node)
@@ -334,7 +314,7 @@ func Test_Radix(t *testing.T) {
 	ipn = &net.IPNet{}
 	ipn.IP = net.ParseIP("10.0.0.0")
 	ipn.Mask = net.CIDRMask(8, 32)
-	it = r.IPv4NewIter(ipn, true)
+	it = r.IPv4NewIter(ipn)
 	for it.Next() {
 		n = it.Get()
 		t.Errorf("Case: we have one entry in the tree, initiate browsing on unconcerned network, " +
@@ -349,7 +329,7 @@ func Test_Radix(t *testing.T) {
 	ipn = &net.IPNet{}
 	ipn.IP = net.ParseIP("10.0.0.0")
 	ipn.Mask = net.CIDRMask(8, 32)
-	it = r.IPv4NewIter(ipn, true)
+	it = r.IPv4NewIter(ipn)
 	n = nil
 	for it.Next() {
 		if n != nil {

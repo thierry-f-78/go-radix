@@ -481,49 +481,6 @@ func (n *Node)Next()(*Node) {
 	}
 }
 
-func (n *Node)Prev()(*Node) {
-	var prev *Node
-	for {
-		if prev == n.Parent || prev == nil {
-			/* we come from parent, go right, go left or go back */
-			prev = n
-			if n.Right != nil {
-				n = n.Right
-			} else if n.Left != nil {
-				n = n.Left
-			} else if n.Parent != nil {
-				n = n.Parent
-			}
-		} else if prev == n.Right {
-			/* we come from left branch, go left or go back */
-			prev = n
-			if n.Left != nil {
-				n = n.Left
-			} else if n.Parent != nil {
-				n = n.Parent
-			}
-		} else if prev == n.Left {
-			/* we come from right branch, we go back */
-			prev = n
-			if n.Parent != nil {
-				n = n.Parent
-			}
-		}
-
-		/* None match, this is the end */
-		if n == prev {
-			return nil
-		}
-
-		/* If we reach leaf, return node */
-		if n.Data != nil {
-			return n
-		}
-
-		/* Otherwise continue browsing */
-	}
-}
-
 func (r *Radix)First()(*Node) {
 	var n *Node
 
@@ -569,16 +526,14 @@ type Iter struct {
 	next_node *Node
 	key *[]byte
 	length int
-	forward bool
 }
 
-func (radix *Radix)NewIter(key *[]byte, length int, forward bool)(*Iter) {
+func (radix *Radix)NewIter(key *[]byte, length int)(*Iter) {
 	var i *Iter
 
 	i = &Iter{}
 	i.key = key
 	i.length = length
-	i.forward = forward
 
 	/* Lookup next node */
 	if length == 0 {
@@ -610,11 +565,7 @@ func (i *Iter)set_next()() {
 	if i.next_node == nil {
 		return
 	}
-	if i.forward {
-		i.next_node = i.next_node.Next()
-	} else {
-		i.next_node = i.next_node.Prev()
-	}
+	i.next_node = i.next_node.Next()
 	if i.next_node == nil {
 		return
 	}
