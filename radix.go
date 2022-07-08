@@ -482,20 +482,17 @@ func (n *Node)Next()(*Node) {
 }
 
 func (r *Radix)First()(*Node) {
-	var n *Node
-
 	if r.Node == nil {
 		return nil
 	}
 
-	n = r.Node.Next()
-	if n == nil {
-		if r.Node.Data != nil {
-			return r.Node
-		}
-		return nil
+	/* If entry node is a leaf, return it */
+	if r.Node.Data != nil {
+		return r.Node
 	}
-	return n
+
+	/* Otherwise return next node */
+	return r.Node.Next()
 }
 
 func (r *Radix)Last()(*Node) {
