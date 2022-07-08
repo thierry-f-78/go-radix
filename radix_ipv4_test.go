@@ -124,4 +124,30 @@ func TestRadixIPv4(t *testing.T) {
 	if n != nil {
 		t.Errorf("Should not match")
 	}
+
+	/* insert network and browse */
+
+	r = NewRadix()
+
+	nw1 = &net.IPNet{}
+	nw1.IP = net.ParseIP("10.4.0.0")
+	nw1.Mask = net.CIDRMask(32, 32)
+	r.IPv4Insert(nw1, "10.4.0.0/32")
+
+	nw1 = &net.IPNet{}
+	nw1.IP = net.ParseIP("10.4.0.0")
+	nw1.Mask = net.CIDRMask(16, 32)
+	r.IPv4Insert(nw1, "10.4.0.0/16")
+
+	nw1 = &net.IPNet{}
+	nw1.IP = net.ParseIP("10.4.0.0")
+	nw1.Mask = net.CIDRMask(24, 32)
+	r.IPv4Insert(nw1, "10.4.0.0/24")
+
+	println("Browse forward")
+	for n = r.First(); n != nil; n = n.Next() {
+		println(n.IPv4GetNet().String())
+	}
+
+	println("fin")
 }

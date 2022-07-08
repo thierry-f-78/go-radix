@@ -472,8 +472,8 @@ func (n *Node)Next()(*Node) {
 			return nil
 		}
 
-		/* If we reach leaf, return node */
-		if n.Data != nil {
+		/* If we reach leaf, and I'n not com from parent, return node */
+		if n.Data != nil && prev == n.Parent {
 			return n
 		}
 
