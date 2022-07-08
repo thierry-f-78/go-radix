@@ -548,14 +548,20 @@ func (r *Radix)Last()(*Node) {
 		return nil
 	}
 
-	n = r.Node.Prev()
-	if n == nil {
-		if r.Node.Data != nil {
-			return r.Node
+	/* Return previous leaf, if there are no previous
+	 * node and the entry point is a leaf, return
+	 * entry point.
+	 */
+	n = r.Node
+	for {
+		if n.Right != nil {
+			n = n.Right
+		} else if n.Left != nil {
+			n = n.Left
+		} else {
+			return n
 		}
-		return nil
 	}
-	return n
 }
 
 type Iter struct {
