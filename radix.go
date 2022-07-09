@@ -245,12 +245,6 @@ func (r *Radix)Insert(key *[]byte, length int, data interface{})(*Node, bool) {
 		 */
 		if node.End == length - 1 {
 
-			/* Not a leaf, convert it */
-			if node.Data != nil {
-				node.Data = data
-				return node, true
-			}
-
 			/* Unique mode is active and the data is set, return stored data */
 			if node.Data != nil {
 				return node, false
