@@ -185,7 +185,7 @@ func Benchmark_Radix(t *testing.B) {
 	bytes = make([]byte, 4)
 	now = time.Now()
 	for i = 0; i < rounds; i++ {
-		binary.LittleEndian.PutUint32(bytes, rand.Uint32())
+		binary.BigEndian.PutUint32(bytes, rand.Uint32())
 	}
 	step = time.Now()
 	fmt.Printf("Generate %d random numbers in %fs\n", rounds, step.Sub((now)).Seconds())
