@@ -17,14 +17,20 @@ type Node struct {
 
 type Radix struct {
 	Node *Node
+	length int
 }
 
 func NewRadix()(*Radix) {
 	var radix *Radix
 
 	radix = &Radix{}
+	radix.length = 0
 
 	return radix
+}
+
+func (r *Radix)Len()(int) {
+	return r.length
 }
 
 /* Return true if nodes are equal */
@@ -228,6 +234,7 @@ func (r *Radix)Insert(key *[]byte, length int, data interface{})(*Node, bool) {
 	 */
 	if node == nil {
 		r.Node = leaf
+		r.length++
 		return leaf, true
 	}
 
@@ -252,6 +259,7 @@ func (r *Radix)Insert(key *[]byte, length int, data interface{})(*Node, bool) {
 
 			/* append data */
 			node.Data = data
+			r.length++
 			return node, true
 		}
 
@@ -273,6 +281,7 @@ func (r *Radix)Insert(key *[]byte, length int, data interface{})(*Node, bool) {
 		} else {
 			node.Left = leaf
 		}
+		r.length++
 		return leaf, true
 	}
 
@@ -319,6 +328,7 @@ func (r *Radix)Insert(key *[]byte, length int, data interface{})(*Node, bool) {
 			leaf.Parent.Right = leaf
 		}
 
+		r.length++
 		return leaf, true
 	}
 
@@ -368,12 +378,18 @@ func (r *Radix)Insert(key *[]byte, length int, data interface{})(*Node, bool) {
 		newnode.Parent.Right = newnode
 	}
 
+	r.length++
 	return leaf, true
 }
 
 func (r *Radix)Delete(n *Node) {
 	var p *Node
 	var c *Node
+
+	/* Node WILL be delete, update accounting right now */
+	if n.Data != nil {
+		r.length--
+	}
 
 	/* If the node has two childs, just cleanup data */
 	if n.Left != nil && n.Right != nil {
