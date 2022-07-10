@@ -549,7 +549,7 @@ type Iter struct {
 	length int
 }
 
-func (radix *Radix)NewIter(key *[]byte, length int)(*Iter) {
+func (r *Radix)NewIter(key *[]byte, length int)(*Iter) {
 	var i *Iter
 
 	i = &Iter{}
@@ -558,9 +558,9 @@ func (radix *Radix)NewIter(key *[]byte, length int)(*Iter) {
 
 	/* Lookup next node */
 	if length == 0 {
-		i.next_node = radix.Node
+		i.next_node = r.Node
 	} else {
-		i.next_node = lookup_longuest_last_node(radix, key, length)
+		i.next_node = lookup_longuest_last_node(r, key, length)
 		if i.next_node != nil && !is_children_of(&i.next_node.Bytes, i.key, i.next_node.End, i.length - 1) {
 			i.next_node = nil
 		}
