@@ -151,3 +151,69 @@ func TestRadixIPv4(t *testing.T) {
 
 	println("fin")
 }
+
+func TestRadixIPv4DS(t *testing.T) {
+	var s string
+	var r *Radix
+	var ipn *net.IPNet
+	var err error
+	var n *Node
+	var entered int
+	var count int
+
+	var load_networks []string = []string{
+		"1.0.0.0/24",
+		"1.0.4.0/22",
+		"1.0.16.0/24",
+		"1.0.64.0/18",
+		"1.0.128.0/17",
+		"1.0.128.0/24", /* <- this insert caused error */
+		"1.0.129.0/24",
+		"1.0.130.0/24",
+		"1.0.131.0/24",
+		"1.0.132.0/22",
+		"1.0.136.0/22",
+		"1.0.141.0/24",
+		"1.0.142.0/23",
+		"1.0.144.0/20",
+		"1.0.164.0/22",
+		"1.0.168.0/21",
+		"1.0.192.0/20",
+		"1.0.208.0/22",
+		"1.0.212.0/23",
+		"1.0.214.0/24",
+	}
+
+	r = NewRadix()
+
+	for _, s = range load_networks {
+
+		_, ipn, err = net.ParseCIDR(s)
+		if err != nil {
+			panic(err)
+		}
+		r.IPv4Insert(ipn, s)
+
+		entered++
+		if entered != r.Len() {
+			t.Errorf("entered %d != len %d", entered, r.Len())
+		}
+
+		count = 0
+		for n = r.First(); n != nil; n = n.Next() {
+			count++
+		}
+		if entered != count {
+			t.Errorf("entered %d != count %d", entered, count)
+		}
+	}
+
+	/* browse */
+	count = 0
+	for n = r.First(); n != nil; n = n.Next() {
+		if n.IPv4GetNet().String() != load_networks[count] {
+			t.Errorf("Expect network %s, founs %s", load_networks[count], n.IPv4GetNet().String())
+		}
+		count++;
+	}
+}

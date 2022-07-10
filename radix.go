@@ -195,8 +195,14 @@ func lookup_longuest_last_node(r *Radix, data *[]byte, length int)(*Node) {
 		/* Continue browsing: get the value of next bit.  */
 		end = node.End + 1
 		if (*data)[end / 8] & (0x80 >> (end % 8)) != 0 {
+			if node.Right == nil {
+				return node
+			}
 			node = node.Right
 		} else {
+			if node.Left == nil {
+				return node
+			}
 			node = node.Left
 		}
 	}
