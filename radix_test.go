@@ -197,7 +197,7 @@ func Benchmark_Radix(t *testing.B) {
 	miss = 0
 	for i = 0; i < rounds; i++ {
 		binary.BigEndian.PutUint32(bytes, rand.Uint32())
-		node = lookup_longuest_last_match(r, &bytes, 32)
+		node = r.LookupLonguest(&bytes, 32)
 		if node != nil {
 			hit++
 		} else {

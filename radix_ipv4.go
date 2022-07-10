@@ -23,7 +23,7 @@ func (r *Radix)IPv4LookupLonguest(network *net.IPNet)(*Node) {
 	}
 
 	/* Perform lookup */
-	return lookup_longuest_last_match(r, &key, length)
+	return r.LookupLonguest(&key, length)
 }
 
 func (r *Radix)IPv4LookupLonguestPath(network *net.IPNet)([]*Node) {
@@ -37,7 +37,7 @@ func (r *Radix)IPv4LookupLonguestPath(network *net.IPNet)([]*Node) {
 	}
 
 	/* Perform lookup */
-	return lookup_longuest_all_match(r, &key, length)
+	return r.LookupLonguestPath(&key, length)
 }
 
 func (r *Radix)IPv4Get(network *net.IPNet)(*Node) {
@@ -51,7 +51,7 @@ func (r *Radix)IPv4Get(network *net.IPNet)(*Node) {
 	}
 
 	/* Perform lookup */
-	return lookup_longuest_exact_match(r, &key, length)
+	return r.Get(&key, length)
 }
 
 func (r *Radix)IPv4Insert(network *net.IPNet, data interface{})(*Node, bool) {
@@ -80,7 +80,7 @@ func (r *Radix)IPv4DeleteNetwork(network *net.IPNet)() {
 	}
 
 	/* Perform lookup */
-	node = lookup_longuest_exact_match(r, &key, length)
+	node = r.Get(&key, length)
 	if node == nil {
 		return
 	}

@@ -67,7 +67,7 @@ func (n *Node)String()(string) {
 /* Take the radix tree and a network
  * return true if leaf match and the list of nodes go throught
  */
-func lookup_longuest_all_match(r *Radix, data *[]byte, length int)([]*Node) {
+func (r *Radix)LookupLonguestPath(data *[]byte, length int)([]*Node) {
 	var node *Node
 	var path_node []*Node
 	var end int
@@ -111,7 +111,7 @@ func lookup_longuest_all_match(r *Radix, data *[]byte, length int)([]*Node) {
 	}
 }
 
-func lookup_longuest_last_match(r *Radix, data *[]byte, length int)(*Node) {
+func (r *Radix)LookupLonguest(data *[]byte, length int)(*Node) {
 	var node *Node
 	var last_node *Node
 	var end int
@@ -157,9 +157,9 @@ func lookup_longuest_last_match(r *Radix, data *[]byte, length int)(*Node) {
 	}
 }
 
-func lookup_longuest_exact_match(r *Radix, data *[]byte, length int)(*Node) {
+func (r *Radix)Get(data *[]byte, length int)(*Node) {
 	var n *Node
-	n = lookup_longuest_last_match(r, data, length)
+	n = r.LookupLonguest(data, length)
 	if n == nil {
 		return nil
 	}
