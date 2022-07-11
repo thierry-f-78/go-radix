@@ -145,7 +145,7 @@ func bitlonguestmatch(a *[]byte, b *[]byte, start int, end int)(int) {
 	return -1
 }
 
-/* return true if b is a prefix of a */
+/* return true if b is parent of a. true if a is children of b */
 func is_children_of(a *[]byte, b *[]byte, al int, bl int)(bool) {
 	if bl > al {
 		return false
