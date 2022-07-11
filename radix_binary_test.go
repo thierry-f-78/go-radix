@@ -129,6 +129,22 @@ func TestBitcmp(t *testing.T) {
 	}
 }
 
+func TestIs_children_of(t *testing.T) {
+	/* test is_children_of */
+	if !is_children_of(&[]byte{0xff, 0xff, 0x00, 0x00}, &[]byte{0xff, 0xff, 0x00, 0x00}, 15, 15) {
+		t.Errorf("Should be true")
+	}
+	if is_children_of(&[]byte{0xff, 0x00, 0x00, 0x00}, &[]byte{0xff, 0xff, 0x00, 0x00}, 15, 15) {
+		t.Errorf("Should be false")
+	}
+	if !is_children_of(&[]byte{0xff, 0xff, 0xff, 0x00}, &[]byte{0xff, 0xff, 0x00, 0x00}, 23, 15) {
+		t.Errorf("Should be true")
+	}
+	if is_children_of(&[]byte{0xff, 0x00, 0xff, 0x00}, &[]byte{0xff, 0xff, 0x00, 0x00}, 23, 15) {
+		t.Errorf("Should be false")
+	}
+}
+
 func TestArezero(t *testing.T) {
 	/* test are_zero */
 	if (!are_zero(&[]byte{0,0,0,0}, 0, 31)) {
