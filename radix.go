@@ -73,7 +73,10 @@ func (n *Node)IsAlignedChildrenOf(p *Node)(bool) {
 	if !is_children_of(&n.Bytes, &p.Bytes, n.End, p.End) {
 		return false
 	}
-	return are_zero(&n.Bytes, p.End, n.End)
+	if p.End == n.End {
+		return true
+	}
+	return are_zero(&n.Bytes, p.End + 1, n.End)
 }
 
 /* Take the radix tree and a network
