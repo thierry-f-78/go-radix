@@ -129,6 +129,36 @@ func TestBitcmp(t *testing.T) {
 	}
 }
 
+func TestArezero(t *testing.T) {
+	/* test are_zero */
+	if (!are_zero(&[]byte{0,0,0,0}, 0, 31)) {
+		t.Errorf("Should match")
+	}
+	if (are_zero(&[]byte{0,0,1,0}, 0, 31)) {
+		t.Errorf("Should not match")
+	}
+	if (!are_zero(&[]byte{1,0,0,0}, 8, 31)) {
+		t.Errorf("Should match")
+	}
+	if (are_zero(&[]byte{1,0,1,0}, 8, 31)) {
+		t.Errorf("Should not match")
+	}
+	if (!are_zero(&[]byte{1,0,0,1}, 8, 23)) {
+		t.Errorf("Should match")
+	}
+	if (are_zero(&[]byte{1,0,1,1}, 8, 23)) {
+		t.Errorf("Should not match")
+	}
+
+	/* Partial bytes */
+	if (!are_zero(&[]byte{0xf0,0x00,0x00,0x00}, 4, 31)) {
+		t.Errorf("Should match")
+	}
+	if (are_zero(&[]byte{0xff,0x00,0x00,0x00}, 4, 31)) {
+		t.Errorf("Should not match")
+	}
+}
+
 func TestGenMasks(t *testing.T) {
 	var i int
 	var j int

@@ -56,6 +56,32 @@ func bitcmp(a *[]byte, b *[]byte, start int, end int)(bool) {
 	         !bytes.Equal((*a)[first_byte+1:last_byte], (*b)[first_byte+1:last_byte])) // compare remains bytes
 }
 
+
+/* true if all bits between start and end included are 0 */
+func are_zero(a *[]byte, start int, end int)(bool) {
+	var first_byte int
+	var last_byte int
+	var i int
+
+	if (start ^ end) < 8 {
+		return (*a)[start >> 3] & mix_mask[start & 0x07][end & 0x07] == 0
+	}
+
+	/* Get position in byte array and get bit position in byte */
+	first_byte = start >> 3 /* first_byte = start / 8 */
+	last_byte = end >> 3    /* last_byte = end / 8 */
+	if (((*a)[first_byte] & beg_mask[start & 0x07] != 0) || /* compare first byte */
+	    ((*a)[last_byte] & end_mask[end & 0x07] != 0)) { /* compare last byte */
+		return false
+	}
+	for i = first_byte + 1; i < last_byte; i++ {
+		if (*a)[i] != 0 {
+			return false
+		}
+	}
+	return true
+}
+
 func bitget(a *[]byte, bitno int)(byte) {
 	return ((*a)[bitno / 8] >> (7 - (bitno % 8))) & 0x01
 }
