@@ -445,4 +445,25 @@ func TestIsAlignedChildrenOf(t *testing.T) {
 		t.Errorf("Should not match")
 	}
 
+	/* aligned children - just one bit change */
+
+	/* n2: 3.34.0.0/15 -> 00000011.0010001 0.00000000.00000000
+	 * n1: 3.34.0.0/16 -> 00000011.00100010. 00000000.00000000
+	 */
+
+	n1.Bytes = []byte{3,34,0,0}
+	n1.Start = 0
+	n1.End = 15
+
+	n2.Bytes = []byte{3,34,0,0}
+	n2.Start = 0
+	n2.End = 14
+
+	if !n1.IsChildrenOf(&n2) {
+		t.Errorf("Should match")
+	}
+
+	if !n1.IsAlignedChildrenOf(&n2) {
+		t.Errorf("Should not match")
+	}
 }

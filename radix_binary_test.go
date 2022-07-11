@@ -181,6 +181,31 @@ func TestArezero(t *testing.T) {
 	if (are_zero(&[]byte{0xff,0x00,0x00,0x00}, 4, 31)) {
 		t.Errorf("Should not match")
 	}
+
+	/* One bit at byte start */
+	if (!are_zero(&[]byte{0xff,0x7f,0xff,0xff}, 8, 8)) {
+		t.Errorf("Should match")
+	}
+
+	/* One bit at byte start */
+	if (!are_zero(&[]byte{0x7f,0xff,0xff,0xff}, 0, 0)) {
+		t.Errorf("Should match")
+	}
+
+	/* One bit at byte end */
+	if (!are_zero(&[]byte{0xff,0b11111110,0xff,0xff}, 15, 15)) {
+		t.Errorf("Should match")
+	}
+
+	/* One bit at byte anywhere */
+	if (!are_zero(&[]byte{0xff,0b11110111,0xff,0xff}, 12, 12)) {
+		t.Errorf("Should match")
+	}
+
+	/* One bit at byte end */
+	if (!are_zero(&[]byte{0xff,0xff,0xff,0b11111110}, 31, 31)) {
+		t.Errorf("Should match")
+	}
 }
 
 func TestGenMasks(t *testing.T) {
