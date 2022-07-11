@@ -368,3 +368,81 @@ func Test_Equal(t *testing.T) {
 		t.Errorf("Should be different")
 	}
 }
+
+func TestIsAlignedChildrenOf(t *testing.T) {
+	var n1 Node
+	var n2 Node
+
+	/* full align / child: extact match */
+
+	n1.Bytes = []byte{0,0,0,0}
+	n1.Start = 0
+	n1.End = 31
+
+	n2.Bytes = []byte{0,0,0,0}
+	n2.Start = 0
+	n2.End = 31
+
+	if !n1.IsChildrenOf(&n2) {
+		t.Errorf("Should match")
+	}
+
+	if !n1.IsAlignedChildrenOf(&n2) {
+		t.Errorf("Should match")
+	}
+
+	/* not aligned / not children: parent is smaller than child */
+
+	n1.Bytes = []byte{0,0,0,0}
+	n1.Start = 0
+	n1.End = 30
+
+	n2.Bytes = []byte{0,0,0,0}
+	n2.Start = 0
+	n2.End = 31
+
+	if n1.IsChildrenOf(&n2) {
+		t.Errorf("Should not match")
+	}
+
+	if n1.IsAlignedChildrenOf(&n2) {
+		t.Errorf("Should not match")
+	}
+
+	/* aligned / children : parent is greatest than child */
+
+	n1.Bytes = []byte{0,0,0,0}
+	n1.Start = 0
+	n1.End = 31
+
+	n2.Bytes = []byte{0,0,0,0}
+	n2.Start = 0
+	n2.End = 23
+
+	if !n1.IsChildrenOf(&n2) {
+		t.Errorf("Should match")
+	}
+
+	if !n1.IsAlignedChildrenOf(&n2) {
+		t.Errorf("Should match")
+	}
+
+	/* not aligned / children */
+
+	n1.Bytes = []byte{0,0,0,4}
+	n1.Start = 0
+	n1.End = 31
+
+	n2.Bytes = []byte{0,0,0,0}
+	n2.Start = 0
+	n2.End = 23
+
+	if !n1.IsChildrenOf(&n2) {
+		t.Errorf("Should match")
+	}
+
+	if n1.IsAlignedChildrenOf(&n2) {
+		t.Errorf("Should not match")
+	}
+
+}

@@ -64,6 +64,18 @@ func (n *Node)String()(string) {
 	                   out, n.End + 1, mode, n.Left, n.Right, n.Parent)
 }
 
+/* Return true if n is a children of a */
+func (n *Node)IsChildrenOf(p *Node)(bool) {
+	return is_children_of(&n.Bytes, &p.Bytes, n.End, p.End)
+}
+
+func (n *Node)IsAlignedChildrenOf(p *Node)(bool) {
+	if !is_children_of(&n.Bytes, &p.Bytes, n.End, p.End) {
+		return false
+	}
+	return are_zero(&n.Bytes, p.End, n.End)
+}
+
 /* Take the radix tree and a network
  * return true if leaf match and the list of nodes go throught
  */
