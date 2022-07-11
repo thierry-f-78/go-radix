@@ -6,8 +6,6 @@ import "fmt"
 import "testing"
 
 func TestBitcmp(t *testing.T) {
-	var res int
-
 	/* full bytes */
 	if (!bitcmp(&[]byte{0,0,0,0}, &[]byte{0,0,0,0}, 0, 31)) {
 		t.Errorf("Should match")
@@ -59,7 +57,9 @@ func TestBitcmp(t *testing.T) {
 	if (bitcmp(&[]byte{0xff,0xff,0xff,0xff}, &[]byte{0x00,0x0c,0x00,0x00}, 12, 14)) {
 		t.Errorf("Should not match")
 	}
+}
 
+func TestBitget(t *testing.T) {
 	/* Test bit get */
 	if bitget(&[]byte{0x00,0x01,0x00,0x00}, 15) != 1 {
 		t.Errorf("Bit 13 should be 1")
@@ -79,6 +79,10 @@ func TestBitcmp(t *testing.T) {
 	if bitget(&[]byte{0xff,0xdf,0xff,0xff}, 10) != 0 {
 		t.Errorf("Bit 10 should be 0")
 	}
+}
+
+func TestFirstbitset(t *testing.T) {
+	var res int
 
 	/* Test first bit set */
 	res = firstbitset(0x80)
@@ -97,6 +101,10 @@ func TestBitcmp(t *testing.T) {
 	if res != 7 {
 		t.Errorf("First bit set should be 7, got %d", res)
 	}
+}
+
+func TestBitlonguestmatch(t *testing.T) {
+	var res int
 
 	/* test bitlonguestmatch */
 	res = bitlonguestmatch(&[]byte{0xff, 0xff, 0xff, 0xff}, &[]byte{0xff, 0xff, 0xff, 0xff}, 0, 31)
