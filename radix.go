@@ -332,7 +332,7 @@ func (r *Radix)Insert(key *[]byte, length int, data interface{})(*Node, bool) {
 		node.Start = leaf.End + 1
 
 		/* Append existing nodes */
-		if bitget(&node.Bytes, bitno) == 1 {
+		if bitget(&node.Bytes, node.Start) == 1 {
 			leaf.Right = node
 			leaf.Left = nil
 		} else {
