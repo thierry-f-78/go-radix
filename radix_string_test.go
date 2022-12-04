@@ -101,6 +101,12 @@ func Test_string(t *testing.T) {
 		t.Errorf("\"key aa\" should be found")
 	}
 
+	/* lookup longest prefix */
+	n = r.StringLookupLonguest("ar stayin alive")
+	if n != nil {
+		t.Errorf("lookup should be nil")
+	}
+
 	/* Lookup longest path */
 	ns = r.StringLookupLonguestPath("aaaa")
 	if len(ns) != 3 {
