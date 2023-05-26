@@ -29,7 +29,7 @@ func display_node(n *Node, level int, branch string) {
 		b = append([]byte{0x00}, b...)
 	}
 	ip.IP = net.IP(b)
-	ip.Mask = net.CIDRMask(n.End + 1, 32)
+	ip.Mask = net.CIDRMask(int(n.End) + 1, 32)
 
 	fmt.Printf("%s%s: %p/%s start=%d end=%d ip=%s\n", strings.Repeat("   ", level), branch, n, typ, n.Start, n.End, ip.String())
 	if n.Left != nil {
@@ -108,7 +108,7 @@ func TestRadix(t *testing.T) {
 
 type ent struct {
 	b []byte
-	l int
+	l int16
 }
 
 func Benchmark_Radix(t *testing.B) {
@@ -162,7 +162,7 @@ func Benchmark_Radix(t *testing.B) {
 		if err != nil {
 			panic(err)
 		}
-		ent.l = int(int_dec)
+		ent.l = int16(int_dec)
 
 		list = append(list, ent)
 
@@ -223,7 +223,7 @@ func Benchmark_Radix(t *testing.B) {
 			b = append([]byte{0x00}, b...)
 		}
 		ip2.IP = net.IP(b)
-		ip2.Mask = net.CIDRMask(node.End + 1, 32)
+		ip2.Mask = net.CIDRMask(int(node.End) + 1, 32)
 //		fmt.Printf("%s\n", ip2.String())
 	}
 	step = time.Now()
@@ -240,7 +240,7 @@ func Benchmark_Radix(t *testing.B) {
 		b = append([]byte{0x00}, b...)
 	}
 	ip2.IP = net.IP(b)
-	ip2.Mask = net.CIDRMask(node.End + 1, 32)
+	ip2.Mask = net.CIDRMask(int(node.End) + 1, 32)
 	fmt.Printf("first = %s\n", ip2.String())
 
 	/* Return last entry */
@@ -254,14 +254,14 @@ func Benchmark_Radix(t *testing.B) {
 		b = append([]byte{0x00}, b...)
 	}
 	ip2.IP = net.IP(b)
-	ip2.Mask = net.CIDRMask(node.End + 1, 32)
+	ip2.Mask = net.CIDRMask(int(node.End) + 1, 32)
 	fmt.Printf("last = %s\n", ip2.String())
 
 	/* Returrn all cildrens of key 255.255.224.0/20 */
 
 	var it *Iter
 	var key []byte
-	var ml int
+	var ml int16
 
 //	key = []byte{0xff, 0xff, 0xe0, 0x00}
 	key = []byte{0xff, 0xff, 0x80, 0x00}
@@ -269,7 +269,7 @@ func Benchmark_Radix(t *testing.B) {
 	ml = 18
 
 	ip3.IP = net.IP(key)
-	ip3.Mask = net.CIDRMask(ml, 32)
+	ip3.Mask = net.CIDRMask(int(ml), 32)
 	it = r.NewIter(&key, ml)
 	for it.Next() {
 		node = it.Get()
@@ -278,7 +278,7 @@ func Benchmark_Radix(t *testing.B) {
 			b = append([]byte{0x00}, b...)
 		}
 		ip2.IP = net.IP(b)
-		ip2.Mask = net.CIDRMask(node.End + 1, 32)
+		ip2.Mask = net.CIDRMask(int(node.End) + 1, 32)
 		fmt.Printf("%s contains %s\n", ip3.String(), ip2.String())
 	}
 

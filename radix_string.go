@@ -2,12 +2,12 @@
 
 package radix
 
-func string_to_key(str string)([]byte, int) {
-	return []byte(str), len(str) * 8
+func string_to_key(str string)([]byte, int16) {
+	return []byte(str), int16(len(str)) * 8
 }
 
 func (r *Radix)StringLookupLonguest(str string)(*Node) {
-	var length int
+	var length int16
 	var key []byte
 
 	/* Get the network width. width of 0 id prohibited */
@@ -21,7 +21,7 @@ func (r *Radix)StringLookupLonguest(str string)(*Node) {
 }
 
 func (r *Radix)StringLookupLonguestPath(str string)([]*Node) {
-	var length int
+	var length int16
 	var key []byte
 
 	/* Get the network width. width of 0 id prohibited */
@@ -35,7 +35,7 @@ func (r *Radix)StringLookupLonguestPath(str string)([]*Node) {
 }
 
 func (r *Radix)StringGet(str string)(*Node) {
-	var length int
+	var length int16
 	var key []byte
 
 	/* Get the network width. width of 0 id prohibited */
@@ -49,7 +49,7 @@ func (r *Radix)StringGet(str string)(*Node) {
 }
 
 func (r *Radix)StringInsert(str string, data interface{})(*Node, bool) {
-	var length int
+	var length int16
 	var key []byte
 
 	/* Get the network width. width of 0 id prohibited */
@@ -64,7 +64,7 @@ func (r *Radix)StringInsert(str string, data interface{})(*Node, bool) {
 
 func (r *Radix)StringDelete(str string)() {
 	var node *Node
-	var length int
+	var length int16
 	var key []byte
 
 	/* Get the network width. width of 0 id prohibited */
@@ -84,7 +84,7 @@ func (r *Radix)StringDelete(str string)() {
 }
 
 func (r *Radix)StringNewIter(str string)(*Iter) {
-	var length int
+	var length int16
 	var key []byte
 
 	key, length = string_to_key(str)

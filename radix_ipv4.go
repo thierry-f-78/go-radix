@@ -4,16 +4,18 @@ package radix
 
 import "net"
 
-func network_to_key(network *net.IPNet)([]byte, int) {
-	var length int
+func network_to_key(network *net.IPNet)([]byte, int16) {
+	var l int
+	var length int16
 
 	/* Get the network width. width of 0 id prohibited */
-	length, _ = network.Mask.Size()
+	l, _ = network.Mask.Size()
+	length = int16(l)
 	return []byte(network.IP.To4()), length
 }
 
 func (r *Radix)IPv4LookupLonguest(network *net.IPNet)(*Node) {
-	var length int
+	var length int16
 	var key []byte
 
 	/* Get the network width. width of 0 id prohibited */
@@ -27,7 +29,7 @@ func (r *Radix)IPv4LookupLonguest(network *net.IPNet)(*Node) {
 }
 
 func (r *Radix)IPv4LookupLonguestPath(network *net.IPNet)([]*Node) {
-	var length int
+	var length int16
 	var key []byte
 
 	/* Get the network width. width of 0 id prohibited */
@@ -41,7 +43,7 @@ func (r *Radix)IPv4LookupLonguestPath(network *net.IPNet)([]*Node) {
 }
 
 func (r *Radix)IPv4Get(network *net.IPNet)(*Node) {
-	var length int
+	var length int16
 	var key []byte
 
 	/* Get the network width. width of 0 id prohibited */
@@ -55,7 +57,7 @@ func (r *Radix)IPv4Get(network *net.IPNet)(*Node) {
 }
 
 func (r *Radix)IPv4Insert(network *net.IPNet, data interface{})(*Node, bool) {
-	var length int
+	var length int16
 	var key []byte
 
 	/* Get the network width. width of 0 id prohibited */
@@ -70,7 +72,7 @@ func (r *Radix)IPv4Insert(network *net.IPNet, data interface{})(*Node, bool) {
 
 func (r *Radix)IPv4DeleteNetwork(network *net.IPNet)() {
 	var node *Node
-	var length int
+	var length int16
 	var key []byte
 
 	/* Get the network width. width of 0 id prohibited */
@@ -93,14 +95,14 @@ func (n *Node)IPv4GetNet()(* net.IPNet) {
 	var network *net.IPNet
 
 	network = &net.IPNet{}
-	network.Mask = net.CIDRMask(n.End + 1, 32)
+	network.Mask = net.CIDRMask(int(n.End) + 1, 32)
 	network.IP = net.IP(n.Bytes).Mask(network.Mask)
 
 	return network
 }
 
 func (r *Radix)IPv4NewIter(network *net.IPNet)(*Iter) {
-	var length int
+	var length int16
 	var key []byte
 
 	key, length = network_to_key(network)

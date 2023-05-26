@@ -82,7 +82,7 @@ func TestBitget(t *testing.T) {
 }
 
 func TestFirstbitset(t *testing.T) {
-	var res int
+	var res int16
 
 	/* Test first bit set */
 	res = firstbitset(0x80)
@@ -104,7 +104,7 @@ func TestFirstbitset(t *testing.T) {
 }
 
 func TestBitlonguestmatch(t *testing.T) {
-	var res int
+	var res int16
 
 	/* test bitlonguestmatch */
 	res = bitlonguestmatch(&[]byte{0xff, 0xff, 0xff, 0xff}, &[]byte{0xff, 0xff, 0xff, 0xff}, 0, 31)

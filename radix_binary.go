@@ -17,9 +17,9 @@ var mix_mask = [8][8]byte{
 	{ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01 },
 }
 
-func bitcmp(a *[]byte, b *[]byte, start int, end int)(bool) {
-	var first_byte int
-	var last_byte int
+func bitcmp(a *[]byte, b *[]byte, start int16, end int16)(bool) {
+	var first_byte int16
+	var last_byte int16
 
 	/* If first byte and last byte are the same
 	 * XOR set 0 if bit are equal, 1 in other case.
@@ -82,15 +82,15 @@ func are_zero(a *[]byte, start int, end int)(bool) {
 	return true
 }
 
-func bitget(a *[]byte, bitno int)(byte) {
+func bitget(a *[]byte, bitno int16)(byte) {
 	return ((*a)[bitno / 8] >> (7 - (bitno % 8))) & 0x01
 }
 
 /* MSB is bit 0
  * LSB is bit 7
  */
-func firstbitset(b byte)(int) {
-	var bit int
+func firstbitset(b byte)(int16) {
+	var bit int16
 
 	bit = 0
 
@@ -113,12 +113,12 @@ func firstbitset(b byte)(int) {
 	return bit
 }
 
-func bitlonguestmatch(a *[]byte, b *[]byte, start int, end int)(int) {
-	var first_byte int
-	var first_shift int
+func bitlonguestmatch(a *[]byte, b *[]byte, start int16, end int16)(int16) {
+	var first_byte int16
+	var first_shift int16
 	var first_byte_mask byte
-	var last_byte int
-	var last_shift int
+	var last_byte int16
+	var last_shift int16
 	var last_byte_mask byte
 	var cmp byte
 
@@ -172,7 +172,7 @@ func bitlonguestmatch(a *[]byte, b *[]byte, start int, end int)(int) {
 }
 
 /* return true if b is parent of a. true if a is children of b */
-func is_children_of(a *[]byte, b *[]byte, al int, bl int)(bool) {
+func is_children_of(a *[]byte, b *[]byte, al int16, bl int16)(bool) {
 	if bl > al {
 		return false
 	}
