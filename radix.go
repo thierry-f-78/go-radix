@@ -15,6 +15,21 @@ type Node struct {
 	End int16 /* the first non-representative bit in this node */
 }
 
+type NodeAllocFcn func()(*Node)
+type NodeFreeFcn func(*Node)()
+
+var NodeAlloc NodeAllocFcn = func()(*Node) {
+	return &Node{}
+}
+
+var NodeFree NodeFreeFcn = func(n *Node)() {
+	n.Parent = nil
+	n.Left = nil
+	n.Right = nil
+	n.Data = nil
+	/* do nothing, node is garbage collected */
+}
+
 type Radix struct {
 	Node *Node
 	length int
@@ -239,7 +254,7 @@ func (r *Radix)Insert(key *[]byte, length int16, data interface{})(*Node, bool) 
 	node = lookup_longuest_last_node(r, key, length)
 
 	/* Create leaf node */
-	leaf = &Node{}
+	leaf = NodeAlloc()
 	leaf.Bytes = make([]byte, len(*key))
 	copy(leaf.Bytes, *key)
 	leaf.Start = 0
@@ -365,7 +380,7 @@ func (r *Radix)Insert(key *[]byte, length int16, data interface{})(*Node, bool) 
 	 */
 
 	/* create new node */
-	newnode = &Node{}
+	newnode = NodeAlloc()
 	newnode.Bytes = make([]byte, len(*key))
 	copy(newnode.Bytes, *key)
 	newnode.Start = node.Start
@@ -422,6 +437,7 @@ func (r *Radix)Delete(n *Node) {
 	 * Link the child to the parent. Change child bits
 	 */
 	if (n.Left == nil) != (n.Right == nil) {
+
 		if n.Left != nil {
 			c = n.Left
 		} else {
@@ -431,6 +447,7 @@ func (r *Radix)Delete(n *Node) {
 		c.Parent = n.Parent
 		if n.Parent == nil {
 			r.Node = c
+			NodeFree(n)
 			return
 		}
 		if n.Parent.Left == n {
@@ -438,6 +455,7 @@ func (r *Radix)Delete(n *Node) {
 		} else {
 			n.Parent.Right = c
 		}
+		NodeFree(n)
 		return
 	}
 
@@ -460,6 +478,7 @@ func (r *Radix)Delete(n *Node) {
 
 		/* if the parent node is a leaf, do not remove */
 		if p.Data != nil {
+			NodeFree(n)
 			return
 		}
 
