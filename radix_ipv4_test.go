@@ -3,7 +3,55 @@
 package radix
 
 import "net"
+import "math/rand"
 import "testing"
+import "time"
+
+func TestRadixIPv4Order(t *testing.T) {
+	var r *Radix
+	var reference []string
+	var pfx []string
+	var s string
+	var n *net.IPNet
+	var a *Node
+	var index int
+
+	/* This is a sorted reference of networks */
+	reference = []string{
+		"10.0.0.0/8",
+		"10.0.0.0/9",
+		"10.0.0.0/10",
+		"10.0.0.0/16",
+		"10.0.0.0/24",
+		"10.0.0.0/32",
+		"10.8.0.0/16",
+		"10.8.0.0/24",
+		"10.14.0.0/16",
+		"10.127.3.0/24",
+		"10.128.0.0/16",
+	}
+
+	copy(pfx, reference)
+
+	rand.Seed(time.Now().UnixNano())
+	rand.Shuffle(len(pfx), func(i, j int) { pfx[i], pfx[j] = pfx[j], pfx[i] })
+
+	r = NewRadix()
+	for _, s = range pfx {
+		_, n, _ = net.ParseCIDR(s)
+		r.IPv4Insert(n, "")
+	}
+
+	index = 0
+	for a = r.First(); a != nil; a = a.Next() {
+		// println(a.IPv4GetNet().String())
+		if a.IPv4GetNet().String() != reference[index] {
+			t.Errorf("something is wrong in sort order at index %d, expect %q, got %q",
+			         index, reference[index], a.IPv4GetNet().String())
+		}
+		index++
+	}
+}
 
 func TestRadixIPv4(t *testing.T) {
 	var nw1 *net.IPNet
