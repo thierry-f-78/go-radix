@@ -7,12 +7,12 @@ import "fmt"
 /* This is a tree node. */
 type Node struct {
 	Bytes []byte /* slice of bytes for IPv4 */
-	Start int16 /* the first representative bit in this node */
-	End int16 /* the first non-representative bit in this node */
 	Parent *Node
 	Left *Node
 	Right *Node
 	Data interface{} /* Conatins the list of interface matching the node */
+	Start int16 /* the first representative bit in this node */
+	End int16 /* the first non-representative bit in this node */
 }
 
 type Radix struct {
