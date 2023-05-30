@@ -175,7 +175,7 @@ func Benchmark_Radix(t *testing.B) {
 
 	now = time.Now()
 	for _, ent = range list {
-		r.Insert(&ent.b, ent.l, nil)
+		r.Insert(&ent.b, ent.l, "")
 	}
 	step = time.Now()
 	fmt.Printf("Index %d entries in %fs\n", count, step.Sub((now)).Seconds())
