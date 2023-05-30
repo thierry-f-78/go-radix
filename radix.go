@@ -6,7 +6,7 @@ import "fmt"
 
 /* This is a tree node. */
 type Node struct {
-	Bytes []byte /* slice of bytes for key */
+	Bytes string /* slice of bytes for key */
 	Parent *Node
 	Left *Node
 	Right *Node
@@ -53,7 +53,7 @@ func Equal(n1 *Node, n2 *Node)(bool) {
 	if n1.End != n2.End {
 		return false
 	}
-	return bitcmp(n1.Bytes, n2.Bytes, 0, n1.End)
+	return bitcmp([]byte(n1.Bytes), []byte(n2.Bytes), 0, n1.End)
 }
 
 /* Print node value */
@@ -72,7 +72,7 @@ func (n *Node)String()(string) {
 		mode = "NODE"
 	}
 
-	for _, b = range n.Bytes {
+	for _, b = range []byte(n.Bytes) {
 		out = fmt.Sprintf("%s0x%02x ", out, b)
 	}
 	return fmt.Sprintf("%s/ %d, mode=%s, Left=%p, Right=%p, Parent=%p",
@@ -81,17 +81,17 @@ func (n *Node)String()(string) {
 
 /* Return true if n is a children of a */
 func (n *Node)IsChildrenOf(p *Node)(bool) {
-	return is_children_of(n.Bytes, p.Bytes, n.End, p.End)
+	return is_children_of([]byte(n.Bytes), []byte(p.Bytes), n.End, p.End)
 }
 
 func (n *Node)IsAlignedChildrenOf(p *Node)(bool) {
-	if !is_children_of(n.Bytes, p.Bytes, n.End, p.End) {
+	if !is_children_of([]byte(n.Bytes), []byte(p.Bytes), n.End, p.End) {
 		return false
 	}
 	if p.End == n.End {
 		return true
 	}
-	return are_zero(n.Bytes, int(p.End) + 1, int(n.End))
+	return are_zero([]byte(n.Bytes), int(p.End) + 1, int(n.End))
 }
 
 /* Take the radix tree and a network
@@ -119,7 +119,7 @@ func (r *Radix)LookupLonguestPath(data *[]byte, length int16)([]*Node) {
 		}
 
 		/* Match node. Perform bitcmp only if the input length is greater than current node length */
-		if node.End != -1 && !bitcmp(node.Bytes, *data, node.Start, node.End) {
+		if node.End != -1 && !bitcmp([]byte(node.Bytes), *data, node.Start, node.End) {
 			return path_node
 		}
 		if node.Data != nil {
@@ -160,7 +160,7 @@ func (r *Radix)LookupLonguest(data *[]byte, length int16)(*Node) {
 		 * Otherwise, check the match.
 		 */
 		end = node.End
-		if length < end || (end != -1 && !bitcmp(node.Bytes, *data, node.Start, end)) {
+		if length < end || (end != -1 && !bitcmp([]byte(node.Bytes), *data, node.Start, end)) {
 			return last_node
 		}
 
@@ -218,7 +218,7 @@ func lookup_longuest_last_node(r *Radix, data []byte, length int16)(*Node) {
 		/* Perform bitcmp only if the input length is greater than current node length
 		 * If the node match, continue browsing, otherwise return node.
 		 */
-		if node.End != -1 && !bitcmp(node.Bytes, data, node.Start, node.End) {
+		if node.End != -1 && !bitcmp([]byte(node.Bytes), data, node.Start, node.End) {
 			return node
 		}
 
@@ -255,8 +255,7 @@ func (r *Radix)Insert(key *[]byte, length int16, data interface{})(*Node, bool) 
 
 	/* Create leaf node */
 	leaf = NodeAlloc()
-	leaf.Bytes = make([]byte, len(*key))
-	copy(leaf.Bytes, *key)
+	leaf.Bytes = string(*key)
 	leaf.Start = 0
 	leaf.End = length - 1
 	leaf.Parent = nil
@@ -275,7 +274,7 @@ func (r *Radix)Insert(key *[]byte, length int16, data interface{})(*Node, bool) 
 	}
 
 	/* The last node exact match the new entry */
-	if length > node.End && bitcmp(*key, node.Bytes, node.Start, node.End) {
+	if length > node.End && bitcmp(*key, []byte(node.Bytes), node.Start, node.End) {
 
 		/* CASE #2
 		 *
@@ -327,7 +326,7 @@ func (r *Radix)Insert(key *[]byte, length int16, data interface{})(*Node, bool) 
 	} else {
 		l = node.End
 	}
-	bitno = bitlonguestmatch(*key, node.Bytes, node.Start, l)
+	bitno = bitlonguestmatch(*key, []byte(node.Bytes), node.Start, l)
 	if bitno == -1 {
 
 		/* CASE #4
@@ -347,7 +346,7 @@ func (r *Radix)Insert(key *[]byte, length int16, data interface{})(*Node, bool) 
 		node.Start = leaf.End + 1
 
 		/* Append existing nodes */
-		if bitget(node.Bytes, node.Start) == 1 {
+		if bitget([]byte(node.Bytes), node.Start) == 1 {
 			leaf.Right = node
 			leaf.Left = nil
 		} else {
@@ -381,8 +380,7 @@ func (r *Radix)Insert(key *[]byte, length int16, data interface{})(*Node, bool) 
 
 	/* create new node */
 	newnode = NodeAlloc()
-	newnode.Bytes = make([]byte, len(*key))
-	copy(newnode.Bytes, *key)
+	newnode.Bytes = string(*key)
 	newnode.Start = node.Start
 	newnode.End = bitno - 1
 	newnode.Parent = node.Parent
@@ -595,7 +593,7 @@ func (r *Radix)NewIter(key *[]byte, length int16)(*Iter) {
 		i.next_node = r.Node
 	} else {
 		i.next_node = lookup_longuest_last_node(r, *key, length)
-		if i.next_node != nil && !is_children_of(i.next_node.Bytes, *i.key, i.next_node.End, i.length - 1) {
+		if i.next_node != nil && !is_children_of([]byte(i.next_node.Bytes), *i.key, i.next_node.End, i.length - 1) {
 			i.next_node = nil
 		}
 	}
@@ -624,7 +622,7 @@ func (i *Iter)set_next()() {
 	if i.next_node == nil {
 		return
 	}
-	if i.length > 0 && !is_children_of(i.next_node.Bytes, *i.key, i.next_node.End, i.length - 1) {
+	if i.length > 0 && !is_children_of([]byte(i.next_node.Bytes), *i.key, i.next_node.End, i.length - 1) {
 		i.next_node = nil
 	}
 }

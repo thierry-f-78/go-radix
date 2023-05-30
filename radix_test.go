@@ -24,7 +24,7 @@ func display_node(n *Node, level int, branch string) {
 		typ = "NODE"
 	}
 
-	b = n.Bytes
+	b = []byte(n.Bytes)
 	for len(b) < 4 {
 		b = append([]byte{0x00}, b...)
 	}
@@ -218,7 +218,7 @@ func Benchmark_Radix(t *testing.B) {
 		if node == nil {
 			break
 		}
-		b = node.Bytes
+		b = []byte(node.Bytes)
 		for len(b) < 4 {
 			b = append([]byte{0x00}, b...)
 		}
@@ -235,7 +235,7 @@ func Benchmark_Radix(t *testing.B) {
 	if node == nil {
 		panic("first cannot be null")
 	}
-	b = node.Bytes
+	b = []byte(node.Bytes)
 	for len(b) < 4 {
 		b = append([]byte{0x00}, b...)
 	}
@@ -249,7 +249,7 @@ func Benchmark_Radix(t *testing.B) {
 	if node == nil {
 		panic("first cannot be null")
 	}
-	b = node.Bytes
+	b = []byte(node.Bytes)
 	for len(b) < 4 {
 		b = append([]byte{0x00}, b...)
 	}
@@ -273,7 +273,7 @@ func Benchmark_Radix(t *testing.B) {
 	it = r.NewIter(&key, ml)
 	for it.Next() {
 		node = it.Get()
-		b = node.Bytes
+		b = []byte(node.Bytes)
 		for len(b) < 4 {
 			b = append([]byte{0x00}, b...)
 		}
@@ -343,13 +343,14 @@ func Test_Radix(t *testing.T) {
 func Test_Equal(t *testing.T) {
 	var n1 Node
 	var n2 Node
+	var k []byte
 
 	/* test equal */
-	n1.Bytes = []byte{0,0,0,0}
+	n1.Bytes = string([]byte{0,0,0,0})
 	n1.Start = 0
 	n1.End = 31
 
-	n2.Bytes = []byte{0,0,0,0}
+	n2.Bytes = string([]byte{0,0,0,0})
 	n2.Start = 0
 	n2.End = 31
 
@@ -362,7 +363,9 @@ func Test_Equal(t *testing.T) {
 		t.Errorf("Should be different")
 	}
 
-	n2.Bytes[2] = 1
+	k = []byte(n2.Bytes)
+	k[2] = 1
+	n2.Bytes = string(k)
 	n2.End = 31
 	if Equal(&n1, &n2) {
 		t.Errorf("Should be different")
@@ -375,11 +378,11 @@ func TestIsAlignedChildrenOf(t *testing.T) {
 
 	/* full align / child: extact match */
 
-	n1.Bytes = []byte{0,0,0,0}
+	n1.Bytes = string([]byte{0,0,0,0})
 	n1.Start = 0
 	n1.End = 31
 
-	n2.Bytes = []byte{0,0,0,0}
+	n2.Bytes = string([]byte{0,0,0,0})
 	n2.Start = 0
 	n2.End = 31
 
@@ -393,11 +396,11 @@ func TestIsAlignedChildrenOf(t *testing.T) {
 
 	/* not aligned / not children: parent is smaller than child */
 
-	n1.Bytes = []byte{0,0,0,0}
+	n1.Bytes = string([]byte{0,0,0,0})
 	n1.Start = 0
 	n1.End = 30
 
-	n2.Bytes = []byte{0,0,0,0}
+	n2.Bytes = string([]byte{0,0,0,0})
 	n2.Start = 0
 	n2.End = 31
 
@@ -411,11 +414,11 @@ func TestIsAlignedChildrenOf(t *testing.T) {
 
 	/* aligned / children : parent is greatest than child */
 
-	n1.Bytes = []byte{0,0,0,0}
+	n1.Bytes = string([]byte{0,0,0,0})
 	n1.Start = 0
 	n1.End = 31
 
-	n2.Bytes = []byte{0,0,0,0}
+	n2.Bytes = string([]byte{0,0,0,0})
 	n2.Start = 0
 	n2.End = 23
 
@@ -429,11 +432,11 @@ func TestIsAlignedChildrenOf(t *testing.T) {
 
 	/* not aligned / children */
 
-	n1.Bytes = []byte{0,0,0,4}
+	n1.Bytes = string([]byte{0,0,0,4})
 	n1.Start = 0
 	n1.End = 31
 
-	n2.Bytes = []byte{0,0,0,0}
+	n2.Bytes = string([]byte{0,0,0,0})
 	n2.Start = 0
 	n2.End = 23
 
@@ -451,11 +454,11 @@ func TestIsAlignedChildrenOf(t *testing.T) {
 	 * n1: 3.34.0.0/16 -> 00000011.00100010. 00000000.00000000
 	 */
 
-	n1.Bytes = []byte{3,34,0,0}
+	n1.Bytes = string([]byte{3,34,0,0})
 	n1.Start = 0
 	n1.End = 15
 
-	n2.Bytes = []byte{3,34,0,0}
+	n2.Bytes = string([]byte{3,34,0,0})
 	n2.Start = 0
 	n2.End = 14
 

@@ -54,7 +54,7 @@ func (n *Node)UInt64GetValue()(uint64) {
 	if len(n.Bytes) != 8 {
 		return 0
 	}
-	return binary.BigEndian.Uint64(n.Bytes)
+	return binary.BigEndian.Uint64([]byte(n.Bytes))
 }
 
 func (r *Radix)UInt64NewIter(value uint64)(*Iter) {
