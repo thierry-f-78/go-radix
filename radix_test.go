@@ -13,7 +13,7 @@ import "strings"
 import "testing"
 import "time"
 
-func display_node(n *Node, level int, branch string) {
+func display_node(r *Radix, n *Node, level int, branch string) {
 	var typ string
 	var ip net.IPNet
 	var b []byte
@@ -32,11 +32,11 @@ func display_node(n *Node, level int, branch string) {
 	ip.Mask = net.CIDRMask(int(n.End) + 1, 32)
 
 	fmt.Printf("%s%s: %p/%s start=%d end=%d ip=%s\n", strings.Repeat("   ", level), branch, n, typ, n.Start, n.End, ip.String())
-	if n.Left != nil {
-		display_node(n.Left, level+1, "L")
+	if n.Left != null {
+		display_node(r, r.r2n(n.Left), level+1, "L")
 	}
-	if n.Right != nil {
-		display_node(n.Right, level+1, "R")
+	if n.Right != null {
+		display_node(r, r.r2n(n.Right), level+1, "R")
 	}
 
 }
@@ -48,7 +48,7 @@ func display_radix(r *Radix) {
 		return
 	}
 
-	display_node(r.Node, 0, "-")
+	display_node(r, r.Node, 0, "-")
 }
 
 func TestRadix(t *testing.T) {
@@ -214,7 +214,7 @@ func Benchmark_Radix(t *testing.B) {
 	now = time.Now()
 	node = r.Node
 	for {
-		node = node.Next()
+		node = r.Next(node)
 		if node == nil {
 			break
 		}

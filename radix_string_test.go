@@ -6,7 +6,7 @@ import "fmt"
 import "strings"
 import "testing"
 
-func display_node_string(n *Node, level int, branch string) {
+func display_node_string(r *Radix, n *Node, level int, branch string) {
 	var typ string
 
 	if n.Data != nil {
@@ -16,11 +16,11 @@ func display_node_string(n *Node, level int, branch string) {
 	}
 
 	fmt.Printf("%s%s: %p/%s start=%d end=%d key=%q/%d\n", strings.Repeat("   ", level), branch, n, typ, n.Start, n.End, string(n.Bytes), n.End + 1)
-	if n.Left != nil {
-		display_node_string(n.Left, level+1, "L")
+	if n.Left != null {
+		display_node_string(r, r.r2n(n.Left), level+1, "L")
 	}
-	if n.Right != nil {
-		display_node_string(n.Right, level+1, "R")
+	if n.Right != null {
+		display_node_string(r, r.r2n(n.Right), level+1, "R")
 	}
 
 }
@@ -32,7 +32,7 @@ func display_radix_string(r *Radix) {
 		return
 	}
 
-	display_node_string(r.Node, 0, "-")
+	display_node_string(r, r.Node, 0, "-")
 }
 
 func Test_string(t *testing.T) {

@@ -43,7 +43,7 @@ func TestRadixIPv4Order(t *testing.T) {
 	}
 
 	index = 0
-	for a = r.First(); a != nil; a = a.Next() {
+	for a = r.First(); a != nil; a = r.Next(a) {
 		// println(a.IPv4GetNet().String())
 		if a.IPv4GetNet().String() != reference[index] {
 			t.Errorf("something is wrong in sort order at index %d, expect %q, got %q",
@@ -193,7 +193,7 @@ func TestRadixIPv4(t *testing.T) {
 	r.IPv4Insert(nw1, "10.4.0.0/24")
 
 	println("Browse forward")
-	for n = r.First(); n != nil; n = n.Next() {
+	for n = r.First(); n != nil; n = r.Next(n) {
 		println(n.IPv4GetNet().String())
 	}
 
@@ -248,7 +248,7 @@ func TestRadixIPv4DS(t *testing.T) {
 		}
 
 		count = 0
-		for n = r.First(); n != nil; n = n.Next() {
+		for n = r.First(); n != nil; n = r.Next(n) {
 			count++
 		}
 		if entered != count {
@@ -258,7 +258,7 @@ func TestRadixIPv4DS(t *testing.T) {
 
 	/* browse */
 	count = 0
-	for n = r.First(); n != nil; n = n.Next() {
+	for n = r.First(); n != nil; n = r.Next(n) {
 		if n.IPv4GetNet().String() != load_networks[count] {
 			t.Errorf("Expect network %s, founs %s", load_networks[count], n.IPv4GetNet().String())
 		}
