@@ -7,76 +7,76 @@ import "testing"
 
 func TestBitcmp(t *testing.T) {
 	/* full bytes */
-	if (!bitcmp(&[]byte{0,0,0,0}, &[]byte{0,0,0,0}, 0, 31)) {
+	if (!bitcmp([]byte{0,0,0,0}, []byte{0,0,0,0}, 0, 31)) {
 		t.Errorf("Should match")
 	}
-	if (bitcmp(&[]byte{0,0,1,0}, &[]byte{0,0,0,0}, 0, 31)) {
+	if (bitcmp([]byte{0,0,1,0}, []byte{0,0,0,0}, 0, 31)) {
 		t.Errorf("Should not match")
 	}
-	if (!bitcmp(&[]byte{1,0,0,0}, &[]byte{0,0,0,0}, 8, 31)) {
+	if (!bitcmp([]byte{1,0,0,0}, []byte{0,0,0,0}, 8, 31)) {
 		t.Errorf("Should match")
 	}
-	if (bitcmp(&[]byte{1,0,1,0}, &[]byte{0,0,0,0}, 8, 31)) {
+	if (bitcmp([]byte{1,0,1,0}, []byte{0,0,0,0}, 8, 31)) {
 		t.Errorf("Should not match")
 	}
-	if (!bitcmp(&[]byte{1,0,0,1}, &[]byte{0,0,0,0}, 8, 23)) {
+	if (!bitcmp([]byte{1,0,0,1}, []byte{0,0,0,0}, 8, 23)) {
 		t.Errorf("Should match")
 	}
-	if (bitcmp(&[]byte{1,0,1,1}, &[]byte{0,0,0,0}, 8, 23)) {
+	if (bitcmp([]byte{1,0,1,1}, []byte{0,0,0,0}, 8, 23)) {
 		t.Errorf("Should not match")
 	}
 
 	/* Partial bytes */
-	if (!bitcmp(&[]byte{0xff,0xff,0xff,0xff}, &[]byte{0x0f,0xff,0xff,0xff}, 4, 31)) {
+	if (!bitcmp([]byte{0xff,0xff,0xff,0xff}, []byte{0x0f,0xff,0xff,0xff}, 4, 31)) {
 		t.Errorf("Should match")
 	}
-	if (bitcmp(&[]byte{0xff,0xff,0xff,0xff}, &[]byte{0x0f,0xff,0xf8,0xff}, 4, 31)) {
+	if (bitcmp([]byte{0xff,0xff,0xff,0xff}, []byte{0x0f,0xff,0xf8,0xff}, 4, 31)) {
 		t.Errorf("Should not match")
 	}
-	if (!bitcmp(&[]byte{0xff,0xff,0xff,0xff}, &[]byte{0x0f,0xff,0xff,0xf0}, 4, 27)) {
+	if (!bitcmp([]byte{0xff,0xff,0xff,0xff}, []byte{0x0f,0xff,0xff,0xf0}, 4, 27)) {
 		t.Errorf("Should match")
 	}
-	if (bitcmp(&[]byte{0xff,0xff,0xff,0xff}, &[]byte{0x0f,0xff,0xf8,0xf0}, 4, 27)) {
+	if (bitcmp([]byte{0xff,0xff,0xff,0xff}, []byte{0x0f,0xff,0xf8,0xf0}, 4, 27)) {
 		t.Errorf("Should not match")
 	}
-	if (!bitcmp(&[]byte{0xff,0xff,0xff,0xff}, &[]byte{0x00,0x0f,0xff,0xf0}, 12, 27)) {
+	if (!bitcmp([]byte{0xff,0xff,0xff,0xff}, []byte{0x00,0x0f,0xff,0xf0}, 12, 27)) {
 		t.Errorf("Should match")
 	}
-	if (bitcmp(&[]byte{0xff,0xff,0xff,0xff}, &[]byte{0x00,0x0f,0x8f,0xf0}, 12, 27)) {
+	if (bitcmp([]byte{0xff,0xff,0xff,0xff}, []byte{0x00,0x0f,0x8f,0xf0}, 12, 27)) {
 		t.Errorf("Should not match")
 	}
-	if (!bitcmp(&[]byte{0xff,0xff,0xff,0xff}, &[]byte{0x00,0x0f,0xf0,0x00}, 12, 19)) {
+	if (!bitcmp([]byte{0xff,0xff,0xff,0xff}, []byte{0x00,0x0f,0xf0,0x00}, 12, 19)) {
 		t.Errorf("Should match")
 	}
-	if (bitcmp(&[]byte{0xff,0xff,0xff,0xff}, &[]byte{0x00,0x0f,0x80,0x00}, 12, 19)) {
+	if (bitcmp([]byte{0xff,0xff,0xff,0xff}, []byte{0x00,0x0f,0x80,0x00}, 12, 19)) {
 		t.Errorf("Should not match")
 	}
-	if (!bitcmp(&[]byte{0xff,0xff,0xff,0xff}, &[]byte{0x00,0x0e,0x00,0x00}, 12, 14)) {
+	if (!bitcmp([]byte{0xff,0xff,0xff,0xff}, []byte{0x00,0x0e,0x00,0x00}, 12, 14)) {
 		t.Errorf("Should match")
 	}
-	if (bitcmp(&[]byte{0xff,0xff,0xff,0xff}, &[]byte{0x00,0x0c,0x00,0x00}, 12, 14)) {
+	if (bitcmp([]byte{0xff,0xff,0xff,0xff}, []byte{0x00,0x0c,0x00,0x00}, 12, 14)) {
 		t.Errorf("Should not match")
 	}
 }
 
 func TestBitget(t *testing.T) {
 	/* Test bit get */
-	if bitget(&[]byte{0x00,0x01,0x00,0x00}, 15) != 1 {
+	if bitget([]byte{0x00,0x01,0x00,0x00}, 15) != 1 {
 		t.Errorf("Bit 13 should be 1")
 	}
-	if bitget(&[]byte{0x00,0x80,0x00,0x00}, 8) != 1 {
+	if bitget([]byte{0x00,0x80,0x00,0x00}, 8) != 1 {
 		t.Errorf("Bit 8 should be 1")
 	}
-	if bitget(&[]byte{0x00,0x20,0x00,0x00}, 10) != 1 {
+	if bitget([]byte{0x00,0x20,0x00,0x00}, 10) != 1 {
 		t.Errorf("Bit 10 should be 1")
 	}
-	if bitget(&[]byte{0xff,0xfe,0xff,0xff}, 15) != 0 {
+	if bitget([]byte{0xff,0xfe,0xff,0xff}, 15) != 0 {
 		t.Errorf("Bit 13 should be 0")
 	}
-	if bitget(&[]byte{0xff,0x7f,0xff,0xff}, 8) != 0 {
+	if bitget([]byte{0xff,0x7f,0xff,0xff}, 8) != 0 {
 		t.Errorf("Bit 8 should be 0")
 	}
-	if bitget(&[]byte{0xff,0xdf,0xff,0xff}, 10) != 0 {
+	if bitget([]byte{0xff,0xdf,0xff,0xff}, 10) != 0 {
 		t.Errorf("Bit 10 should be 0")
 	}
 }
@@ -107,31 +107,31 @@ func TestBitlonguestmatch(t *testing.T) {
 	var res int16
 
 	/* test bitlonguestmatch */
-	res = bitlonguestmatch(&[]byte{0xff, 0xff, 0xff, 0xff}, &[]byte{0xff, 0xff, 0xff, 0xff}, 0, 31)
+	res = bitlonguestmatch([]byte{0xff, 0xff, 0xff, 0xff}, []byte{0xff, 0xff, 0xff, 0xff}, 0, 31)
 	if res != -1 {
 		t.Errorf("Expect -1, got %d", res)
 	}
-	res = bitlonguestmatch(&[]byte{0xff, 0xff, 0xff, 0xff}, &[]byte{0xff, 0xff, 0xfe, 0xff}, 0, 31)
+	res = bitlonguestmatch([]byte{0xff, 0xff, 0xff, 0xff}, []byte{0xff, 0xff, 0xfe, 0xff}, 0, 31)
 	if res != 23 {
 		t.Errorf("Expect 23, got %d", res)
 	}
-	res = bitlonguestmatch(&[]byte{0xff, 0xff, 0xff, 0xff}, &[]byte{0x00, 0xff, 0xfe, 0xff}, 8, 31)
+	res = bitlonguestmatch([]byte{0xff, 0xff, 0xff, 0xff}, []byte{0x00, 0xff, 0xfe, 0xff}, 8, 31)
 	if res != 23 {
 		t.Errorf("Expect 23, got %d", res)
 	}
-	res = bitlonguestmatch(&[]byte{0xff, 0xff, 0xff, 0xff}, &[]byte{0xff, 0xff, 0xff, 0xff}, 0, 23)
+	res = bitlonguestmatch([]byte{0xff, 0xff, 0xff, 0xff}, []byte{0xff, 0xff, 0xff, 0xff}, 0, 23)
 	if res != -1 {
 		t.Errorf("Expect -1, got %d", res)
 	}
-	res = bitlonguestmatch(&[]byte{0xff, 0xff, 0xff, 0xff}, &[]byte{0xff, 0xff, 0xfd, 0xff}, 0, 22)
+	res = bitlonguestmatch([]byte{0xff, 0xff, 0xff, 0xff}, []byte{0xff, 0xff, 0xfd, 0xff}, 0, 22)
 	if res != 22 {
 		t.Errorf("Expect 22, got %d", res)
 	}
-	res = bitlonguestmatch(&[]byte{0xff, 0xff, 0xff, 0xff}, &[]byte{0xff, 0xff, 0xfe, 0xff}, 0, 23)
+	res = bitlonguestmatch([]byte{0xff, 0xff, 0xff, 0xff}, []byte{0xff, 0xff, 0xfe, 0xff}, 0, 23)
 	if res != 23 {
 		t.Errorf("Expect 23, got %d", res)
 	}
-	res = bitlonguestmatch(&[]byte{0xff, 0xff, 0xff, 0xff}, &[]byte{0x00, 0xff, 0xfe, 0xff}, 8, 23)
+	res = bitlonguestmatch([]byte{0xff, 0xff, 0xff, 0xff}, []byte{0x00, 0xff, 0xfe, 0xff}, 8, 23)
 	if res != 23 {
 		t.Errorf("Expect 23, got %d", res)
 	}
@@ -139,71 +139,71 @@ func TestBitlonguestmatch(t *testing.T) {
 
 func TestIs_children_of(t *testing.T) {
 	/* test is_children_of */
-	if !is_children_of(&[]byte{0xff, 0xff, 0x00, 0x00}, &[]byte{0xff, 0xff, 0x00, 0x00}, 15, 15) {
+	if !is_children_of([]byte{0xff, 0xff, 0x00, 0x00}, []byte{0xff, 0xff, 0x00, 0x00}, 15, 15) {
 		t.Errorf("Should be true")
 	}
-	if is_children_of(&[]byte{0xff, 0x00, 0x00, 0x00}, &[]byte{0xff, 0xff, 0x00, 0x00}, 15, 15) {
+	if is_children_of([]byte{0xff, 0x00, 0x00, 0x00}, []byte{0xff, 0xff, 0x00, 0x00}, 15, 15) {
 		t.Errorf("Should be false")
 	}
-	if !is_children_of(&[]byte{0xff, 0xff, 0xff, 0x00}, &[]byte{0xff, 0xff, 0x00, 0x00}, 23, 15) {
+	if !is_children_of([]byte{0xff, 0xff, 0xff, 0x00}, []byte{0xff, 0xff, 0x00, 0x00}, 23, 15) {
 		t.Errorf("Should be true")
 	}
-	if is_children_of(&[]byte{0xff, 0x00, 0xff, 0x00}, &[]byte{0xff, 0xff, 0x00, 0x00}, 23, 15) {
+	if is_children_of([]byte{0xff, 0x00, 0xff, 0x00}, []byte{0xff, 0xff, 0x00, 0x00}, 23, 15) {
 		t.Errorf("Should be false")
 	}
 }
 
 func TestArezero(t *testing.T) {
 	/* test are_zero */
-	if (!are_zero(&[]byte{0,0,0,0}, 0, 31)) {
+	if (!are_zero([]byte{0,0,0,0}, 0, 31)) {
 		t.Errorf("Should match")
 	}
-	if (are_zero(&[]byte{0,0,1,0}, 0, 31)) {
+	if (are_zero([]byte{0,0,1,0}, 0, 31)) {
 		t.Errorf("Should not match")
 	}
-	if (!are_zero(&[]byte{1,0,0,0}, 8, 31)) {
+	if (!are_zero([]byte{1,0,0,0}, 8, 31)) {
 		t.Errorf("Should match")
 	}
-	if (are_zero(&[]byte{1,0,1,0}, 8, 31)) {
+	if (are_zero([]byte{1,0,1,0}, 8, 31)) {
 		t.Errorf("Should not match")
 	}
-	if (!are_zero(&[]byte{1,0,0,1}, 8, 23)) {
+	if (!are_zero([]byte{1,0,0,1}, 8, 23)) {
 		t.Errorf("Should match")
 	}
-	if (are_zero(&[]byte{1,0,1,1}, 8, 23)) {
+	if (are_zero([]byte{1,0,1,1}, 8, 23)) {
 		t.Errorf("Should not match")
 	}
 
 	/* Partial bytes */
-	if (!are_zero(&[]byte{0xf0,0x00,0x00,0x00}, 4, 31)) {
+	if (!are_zero([]byte{0xf0,0x00,0x00,0x00}, 4, 31)) {
 		t.Errorf("Should match")
 	}
-	if (are_zero(&[]byte{0xff,0x00,0x00,0x00}, 4, 31)) {
+	if (are_zero([]byte{0xff,0x00,0x00,0x00}, 4, 31)) {
 		t.Errorf("Should not match")
 	}
 
 	/* One bit at byte start */
-	if (!are_zero(&[]byte{0xff,0x7f,0xff,0xff}, 8, 8)) {
+	if (!are_zero([]byte{0xff,0x7f,0xff,0xff}, 8, 8)) {
 		t.Errorf("Should match")
 	}
 
 	/* One bit at byte start */
-	if (!are_zero(&[]byte{0x7f,0xff,0xff,0xff}, 0, 0)) {
+	if (!are_zero([]byte{0x7f,0xff,0xff,0xff}, 0, 0)) {
 		t.Errorf("Should match")
 	}
 
 	/* One bit at byte end */
-	if (!are_zero(&[]byte{0xff,0b11111110,0xff,0xff}, 15, 15)) {
+	if (!are_zero([]byte{0xff,0b11111110,0xff,0xff}, 15, 15)) {
 		t.Errorf("Should match")
 	}
 
 	/* One bit at byte anywhere */
-	if (!are_zero(&[]byte{0xff,0b11110111,0xff,0xff}, 12, 12)) {
+	if (!are_zero([]byte{0xff,0b11110111,0xff,0xff}, 12, 12)) {
 		t.Errorf("Should match")
 	}
 
 	/* One bit at byte end */
-	if (!are_zero(&[]byte{0xff,0xff,0xff,0b11111110}, 31, 31)) {
+	if (!are_zero([]byte{0xff,0xff,0xff,0b11111110}, 31, 31)) {
 		t.Errorf("Should match")
 	}
 }

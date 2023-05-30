@@ -17,7 +17,7 @@ var mix_mask = [8][8]byte{
 	{ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01 },
 }
 
-func bitcmp(a *[]byte, b *[]byte, start int16, end int16)(bool) {
+func bitcmp(a []byte, b []byte, start int16, end int16)(bool) {
 	var first_byte int16
 	var last_byte int16
 
@@ -45,45 +45,44 @@ func bitcmp(a *[]byte, b *[]byte, start int16, end int16)(bool) {
 	 * 4+2+1 = 7.
 	 */
 	if (start ^ end) < 8 {
-		return ((*a)[start >> 3] ^ (*b)[start >> 3]) & mix_mask[start & 0x07][end & 0x07] == 0
+		return (a[start >> 3] ^ b[start >> 3]) & mix_mask[start & 0x07][end & 0x07] == 0
 	}
 
 	/* Get position in byte array and get bit position in byte */
 	first_byte = start >> 3 /* first_byte = start / 8 */
 	last_byte = end >> 3    /* last_byte = end / 8 */
-	return !((((*a)[first_byte] ^ (*b)[first_byte]) & beg_mask[start & 0x07] != 0) || // compare first byte
-	         (((*a)[last_byte] ^ (*b)[last_byte]) & end_mask[end & 0x07] != 0)  || // compare last byte
-	         !bytes.Equal((*a)[first_byte+1:last_byte], (*b)[first_byte+1:last_byte])) // compare remains bytes
+	return !(((a[first_byte] ^ b[first_byte]) & beg_mask[start & 0x07] != 0) || // compare first byte
+	         ((a[last_byte] ^ b[last_byte]) & end_mask[end & 0x07] != 0)  || // compare last byte
+	         !bytes.Equal(a[first_byte+1:last_byte], b[first_byte+1:last_byte])) // compare remains bytes
 }
 
-
 /* true if all bits between start and end included are 0 */
-func are_zero(a *[]byte, start int, end int)(bool) {
+func are_zero(a []byte, start int, end int)(bool) {
 	var first_byte int
 	var last_byte int
 	var i int
 
 	if (start ^ end) < 8 {
-		return (*a)[start >> 3] & mix_mask[start & 0x07][end & 0x07] == 0
+		return a[start >> 3] & mix_mask[start & 0x07][end & 0x07] == 0
 	}
 
 	/* Get position in byte array and get bit position in byte */
 	first_byte = start >> 3 /* first_byte = start / 8 */
 	last_byte = end >> 3    /* last_byte = end / 8 */
-	if (((*a)[first_byte] & beg_mask[start & 0x07] != 0) || /* compare first byte */
-	    ((*a)[last_byte] & end_mask[end & 0x07] != 0)) { /* compare last byte */
+	if ((a[first_byte] & beg_mask[start & 0x07] != 0) || /* compare first byte */
+	    (a[last_byte] & end_mask[end & 0x07] != 0)) { /* compare last byte */
 		return false
 	}
 	for i = first_byte + 1; i < last_byte; i++ {
-		if (*a)[i] != 0 {
+		if a[i] != 0 {
 			return false
 		}
 	}
 	return true
 }
 
-func bitget(a *[]byte, bitno int16)(byte) {
-	return ((*a)[bitno / 8] >> (7 - (bitno % 8))) & 0x01
+func bitget(a []byte, bitno int16)(byte) {
+	return (a[bitno / 8] >> (7 - (bitno % 8))) & 0x01
 }
 
 /* MSB is bit 0
@@ -113,7 +112,7 @@ func firstbitset(b byte)(int16) {
 	return bit
 }
 
-func bitlonguestmatch(a *[]byte, b *[]byte, start int16, end int16)(int16) {
+func bitlonguestmatch(a []byte, b []byte, start int16, end int16)(int16) {
 	var first_byte int16
 	var first_shift int16
 	var first_byte_mask byte
@@ -140,7 +139,7 @@ func bitlonguestmatch(a *[]byte, b *[]byte, start int16, end int16)(int16) {
 
 	/* Special case only one byte */
 	if first_byte == last_byte {
-		cmp = ((*a)[first_byte] ^ (*b)[first_byte]) & first_byte_mask & last_byte_mask
+		cmp = (a[first_byte] ^ b[first_byte]) & first_byte_mask & last_byte_mask
 		if cmp == 0 {
 			return -1
 		}
@@ -148,21 +147,21 @@ func bitlonguestmatch(a *[]byte, b *[]byte, start int16, end int16)(int16) {
 	}
 
 	/* Check difference in the first byte */
-	cmp = ((*a)[first_byte] ^ (*b)[first_byte]) & first_byte_mask
+	cmp = (a[first_byte] ^ b[first_byte]) & first_byte_mask
 	if cmp != 0 {
 		return (first_byte * 8) + firstbitset(cmp)
 	}
 
 	/* Compare other bytes */
 	for first_byte++; first_byte < last_byte; first_byte++ {
-		if (*a)[first_byte] != (*b)[first_byte] {
-			cmp = (*a)[first_byte] ^ (*b)[first_byte]
+		if a[first_byte] != b[first_byte] {
+			cmp = a[first_byte] ^ b[first_byte]
 			return (first_byte * 8) + firstbitset(cmp)
 		}
 	}
 
 	/* Check difference in the last byte */
-	cmp = ((*a)[last_byte] ^ (*b)[last_byte]) & last_byte_mask
+	cmp = (a[last_byte] ^ b[last_byte]) & last_byte_mask
 	if cmp != 0 {
 		return (last_byte * 8) + firstbitset(cmp)
 	}
@@ -172,7 +171,7 @@ func bitlonguestmatch(a *[]byte, b *[]byte, start int16, end int16)(int16) {
 }
 
 /* return true if b is parent of a. true if a is children of b */
-func is_children_of(a *[]byte, b *[]byte, al int16, bl int16)(bool) {
+func is_children_of(a []byte, b []byte, al int16, bl int16)(bool) {
 	if bl > al {
 		return false
 	}
