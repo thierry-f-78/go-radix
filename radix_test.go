@@ -356,12 +356,12 @@ func Test_Equal(t *testing.T) {
 	n2.Start = 0
 	n2.End = 31
 
-	if !Equal(&n1, &n2) {
+	if !equal(&n1, &n2) {
 		t.Errorf("Should be equal")
 	}
 
 	n2.End = 30
-	if Equal(&n1, &n2) {
+	if equal(&n1, &n2) {
 		t.Errorf("Should be different")
 	}
 
@@ -369,7 +369,7 @@ func Test_Equal(t *testing.T) {
 	k[2] = 1
 	n2.Bytes = string(k)
 	n2.End = 31
-	if Equal(&n1, &n2) {
+	if equal(&n1, &n2) {
 		t.Errorf("Should be different")
 	}
 }

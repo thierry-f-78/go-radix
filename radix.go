@@ -54,7 +54,10 @@ func (r *Radix)Len()(int) {
 }
 
 /* Return true if nodes are equal */
-func Equal(n1 *node, n2 *node)(bool) {
+func Equal(n1 *Node, n2 *Node)(bool) {
+	return equal(&n1.node, &n2.node)
+}
+func equal(n1 *node, n2 *node)(bool) {
 	if n1.End != n2.End {
 		return false
 	}
