@@ -19,7 +19,7 @@ type node_pool struct {
 type ptr_range struct {
 	start uintptr
 	end uintptr
-	pool_index int
+	index int
 }
 
 func (r *Radix)node_alloc()(*Node) {
@@ -81,7 +81,7 @@ func (r *Radix)growth() {
 }
 
 /* if insert a range which overlap existing range, it panic */
-func (r *Radix)add_range(start uintptr, end uintptr, pool_index int) {
+func (r *Radix)add_range(start uintptr, end uintptr, index int) {
 	var left int
 	var right int
 	var pivot int
@@ -94,7 +94,7 @@ func (r *Radix)add_range(start uintptr, end uintptr, pool_index int) {
 	insert_data = []ptr_range{ptr_range{
 		start: start,
 		end: end,
-		pool_index: pool_index,
+		index: index,
 	}}
 
 	right = len(r.ptr_range)
@@ -124,7 +124,7 @@ func (r *Radix)n2r(n *Node)(uint32) {
 	var left int
 	var right int
 	var pivot int
-	var pool_index int
+	var index int
 	var p uintptr
 	var c *chunk
 
@@ -136,7 +136,7 @@ func (r *Radix)n2r(n *Node)(uint32) {
 	}
 	for {
 		if left == right {
-			pool_index = r.ptr_range[left].pool_index
+			index = r.ptr_range[left].index
 			break
 		}
 		pivot = (left + right) / 2
@@ -145,7 +145,7 @@ func (r *Radix)n2r(n *Node)(uint32) {
 		} else if p > r.ptr_range[pivot].end {
 			left = pivot + 1
 		} else {
-			pool_index = r.ptr_range[pivot].pool_index
+			index = r.ptr_range[pivot].index
 			break
 		}
 		if left > right {
@@ -153,6 +153,6 @@ func (r *Radix)n2r(n *Node)(uint32) {
 			return 0
 		}
 	}
-	c = r.node.pool[pool_index]
-	return (uint32(pool_index) << 16) | (uint32(p - c.ptr) / node_sz)
+	c = r.node.pool[index]
+	return (uint32(index) << 16) | (uint32(p - c.ptr) / node_sz)
 }
