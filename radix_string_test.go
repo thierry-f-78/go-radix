@@ -27,12 +27,12 @@ func display_node_string(r *Radix, n *Node, level int, branch string) {
 
 func display_radix_string(r *Radix) {
 
-	if r.Node == nil {
+	if r.Node == null {
 		fmt.Printf("root pointer nil\n")
 		return
 	}
 
-	display_node_string(r, r.Node, 0, "-")
+	display_node_string(r, r.r2n(r.Node), 0, "-")
 }
 
 func Test_string(t *testing.T) {

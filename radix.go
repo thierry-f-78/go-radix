@@ -21,7 +21,7 @@ const null = uint32(0x00000000)
 const node_sz = uint32(unsafe.Sizeof(Node{}))
 
 type Radix struct {
-	Node *Node
+	Node uint32
 	length int
 	node node_pool
 	ptr_range []ptr_range
@@ -100,7 +100,7 @@ func (r *Radix)LookupLonguestPath(data *[]byte, length int16)([]*Node) {
 	/* Browse tree */
 	length-- /* convert length to index of last bit */
 	path_node = make([]*Node, 0)
-	node = r.Node
+	node = r.r2n(r.Node)
 	for {
 
 		/* We reach end of tree */
@@ -143,7 +143,7 @@ func (r *Radix)LookupLonguest(data *[]byte, length int16)(*Node) {
 
 	/* Browse tree */
 	length-- /* convert length to index of last bit */
-	node = r.Node
+	node = r.r2n(r.Node)
 	for {
 
 		/* Check if processed node is nil */
@@ -200,7 +200,7 @@ func lookup_longuest_last_node(r *Radix, data []byte, length int16)(*Node) {
 
 	/* Browse tree */
 	length-- /* convert length to index of last bit */
-	node = r.Node
+	node = r.r2n(r.Node)
 	for {
 
 		/* If node is nil, return nil, otherwise, return the node
@@ -263,7 +263,7 @@ func (r *Radix)Insert(key *[]byte, length int16, data interface{})(*Node, bool) 
 	 * Special case, tree is empty, create node
 	 */
 	if node == nil {
-		r.Node = leaf
+		r.Node = r.n2r(leaf)
 		r.length++
 		return leaf, true
 	}
@@ -351,7 +351,7 @@ func (r *Radix)Insert(key *[]byte, length int16, data interface{})(*Node, bool) 
 
 		/* Update original parent */
 		if leaf.Parent == null {
-			r.Node = leaf
+			r.Node = r.n2r(leaf)
 		} else if r.r2n(leaf.Parent).Left == r.n2r(node) {
 			r.r2n(leaf.Parent).Left = r.n2r(leaf)
 		} else {
@@ -400,7 +400,7 @@ func (r *Radix)Insert(key *[]byte, length int16, data interface{})(*Node, bool) 
 
 	/* Update original parent */
 	if newnode.Parent == null {
-		r.Node = newnode
+		r.Node = r.n2r(newnode)
 	} else if r.r2n(newnode.Parent).Left == r.n2r(node) {
 		r.r2n(newnode.Parent).Left = r.n2r(newnode)
 	} else {
@@ -439,7 +439,7 @@ func (r *Radix)Delete(n *Node) {
 		c.Start = n.Start
 		c.Parent = n.Parent
 		if n.Parent == null {
-			r.Node = c
+			r.Node = r.n2r(c)
 			r.node_free(n)
 			return
 		}
@@ -457,7 +457,7 @@ func (r *Radix)Delete(n *Node) {
 
 		/* we reach root */
 		if n.Parent == null {
-			r.Node = nil
+			r.Node = null
 			return
 		}
 
@@ -533,23 +533,23 @@ func (r *Radix)Next(n *Node)(*Node) {
 }
 
 func (r *Radix)First()(*Node) {
-	if r.Node == nil {
+	if r.Node == null {
 		return nil
 	}
 
 	/* If entry node is a leaf, return it */
-	if r.Node.Data != nil {
-		return r.Node
+	if r.r2n(r.Node).Data != nil {
+		return r.r2n(r.Node)
 	}
 
 	/* Otherwise return next node */
-	return r.Next(r.Node)
+	return r.Next(r.r2n(r.Node))
 }
 
 func (r *Radix)Last()(*Node) {
 	var n *Node
 
-	if r.Node == nil {
+	if r.Node == null {
 		return nil
 	}
 
@@ -557,7 +557,7 @@ func (r *Radix)Last()(*Node) {
 	 * node and the entry point is a leaf, return
 	 * entry point.
 	 */
-	n = r.Node
+	n = r.r2n(r.Node)
 	for {
 		if n.Right != null {
 			n = r.r2n(n.Right)
@@ -587,7 +587,7 @@ func (r *Radix)NewIter(key *[]byte, length int16)(*Iter) {
 
 	/* Lookup next node */
 	if length == 0 {
-		i.next_node = r.Node
+		i.next_node = r.r2n(r.Node)
 	} else {
 		i.next_node = lookup_longuest_last_node(r, *key, length)
 		if i.next_node != nil && !is_children_of([]byte(i.next_node.Bytes), *i.key, i.next_node.End, i.length - 1) {

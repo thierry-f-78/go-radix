@@ -43,12 +43,12 @@ func display_node(r *Radix, n *Node, level int, branch string) {
 
 func display_radix(r *Radix) {
 
-	if r.Node == nil {
+	if r.Node == null {
 		fmt.Printf("root pointer nil\n")
 		return
 	}
 
-	display_node(r, r.Node, 0, "-")
+	display_node(r, r.r2n(r.Node), 0, "-")
 }
 
 func TestRadix(t *testing.T) {
@@ -212,7 +212,7 @@ func Benchmark_Radix(t *testing.B) {
 	/* perform full scan */
 
 	now = time.Now()
-	node = r.Node
+	node = r.r2n(r.Node)
 	for {
 		node = r.Next(node)
 		if node == nil {
