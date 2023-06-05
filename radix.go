@@ -19,8 +19,8 @@ type Node struct {
 	/* 56 */
 }
 
-var null uint32 = 0x80000000
-var node_sz uint32 = uint32(unsafe.Sizeof(Node{}))
+const null = uint32(0x80000000)
+const node_sz = uint32(unsafe.Sizeof(Node{}))
 
 type chunk struct {
 	nodes [65536]Node
