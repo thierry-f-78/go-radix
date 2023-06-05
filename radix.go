@@ -14,9 +14,7 @@ type Node struct {
 	/*  4 */ Right uint32
 	/*  2 */ Start int16 /* the first representative bit in this node */
 	/*  2 */ End int16 /* the first non-representative bit in this node */
-	/*  2 */ pool uint16
-	/*  6    6 bytes reserved but unused for alignment */
-	/* 56 */
+	/* 48 */
 }
 
 const null = uint32(0x80000000)
@@ -33,6 +31,7 @@ type Radix struct {
 	free int
 	capacity int
 	pool []*chunk
+	ptr_range []ptr_range
 	next uint32
 }
 
@@ -66,16 +65,6 @@ func (r *Radix)r2n(v uint32)(*Node) {
 	return &r.pool[v >> 16].nodes[v & 0xffff]
 }
 
-/* node to reference */
-func (r *Radix)n2r(n *Node)(uint32) {
-	var c *chunk
-	var p uintptr
-
-	p = uintptr(unsafe.Pointer(n))
-	c = r.pool[n.pool]
-	return (uint32(n.pool) << 16) | (uint32(p - c.ptr) / node_sz)
-}
-
 func (r *Radix)growth() {
 	var c *chunk
 	var i int
@@ -88,8 +77,8 @@ func (r *Radix)growth() {
 	r.pool = append(r.pool, c)
 	r.free += 65536
 	r.capacity += 65536
+	r.add_range(c.ptr, (uintptr)(unsafe.Pointer(&c.nodes[65536 - 1])), len(r.pool) - 1)
 	for i, _ = range c.nodes {
-		c.nodes[i].pool = uint16(len(r.pool)) - 1
 		c.nodes[i].Left = r.next
 		r.next = r.n2r(&c.nodes[i])
 	}
