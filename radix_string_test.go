@@ -6,10 +6,12 @@ import "fmt"
 import "strings"
 import "testing"
 
-func display_node_string(r *Radix, n *Node, level int, branch string) {
+func display_node_string(r *Radix, n *node, level int, branch string) {
 	var typ string
+	var ref uint32
 
-	if n.Data != nil {
+	ref = r.n2r(n)
+	if is_leaf(ref) {
 		typ = "LEAF"
 	} else {
 		typ = "NODE"

@@ -95,8 +95,8 @@ func (n *Node)IPv4GetNet()(* net.IPNet) {
 	var network *net.IPNet
 
 	network = &net.IPNet{}
-	network.Mask = net.CIDRMask(int(n.End) + 1, 32)
-	network.IP = net.IP(n.Bytes).Mask(network.Mask)
+	network.Mask = net.CIDRMask(int(n.node.End) + 1, 32)
+	network.IP = net.IP(n.node.Bytes).Mask(network.Mask)
 
 	return network
 }

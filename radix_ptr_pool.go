@@ -5,16 +5,29 @@ package radix
 import "unsafe"
 
 const kind_node = 0
+const kind_leaf = 1
 
-type chunk struct {
-	nodes [65536]Node
+type node_chunk struct {
+	nodes [65536]node
 	ptr uintptr
 }
 
 type node_pool struct {
 	free int
 	capacity int
-	pool []*chunk
+	pool []*node_chunk
+	next uint32
+}
+
+type leaf_chunk struct {
+	nodes [65536]Node
+	ptr uintptr
+}
+
+type leaf_pool struct {
+	free int
+	capacity int
+	pool []*leaf_chunk
 	next uint32
 }
 
@@ -25,11 +38,15 @@ type ptr_range struct {
 	kind int
 }
 
-func (r *Radix)node_alloc()(*Node) {
-	var n *Node
+func is_leaf(ref uint32)(bool) {
+	return (ref & 0x80000000) != 0
+}
+
+func (r *Radix)node_alloc()(*node) {
+	var n *node
 
 	if r.node.free == 0 {
-		r.growth()
+		r.node_growth()
 	}
 	r.node.free--
 	n = r.r2n(r.node.next)
@@ -37,32 +54,60 @@ func (r *Radix)node_alloc()(*Node) {
 	return n
 }
 
-func (r *Radix)node_free(n *Node)() {
-	n.Data = nil
-	n.Bytes = ""
-	n.Parent = null
-	n.Left = r.node.next
-	n.Right = null
-	r.node.free++
-	r.node.next = r.n2r(n)
+func (r *Radix)leaf_alloc()(*Node) {
+	var n *Node
+
+	if r.leaf.free == 0 {
+		r.leaf_growth()
+	}
+	r.leaf.free--
+	n = n2N(r.r2n(r.leaf.next))
+	r.leaf.next = n.node.Left
+	return n
+}
+
+func (r *Radix)free(n *node)() {
+	var leaf *Node
+
+	if is_leaf(r.n2r(n)) {
+		leaf = n2N(n)
+		leaf.Data = nil
+		leaf.node.Bytes = ""
+		leaf.node.Parent = null
+		leaf.node.Left = r.leaf.next
+		leaf.node.Right = null
+		r.leaf.free++
+		r.leaf.next = r.n2r(&leaf.node)
+	} else {
+		n.Bytes = ""
+		n.Parent = null
+		n.Left = r.node.next
+		n.Right = null
+		r.node.free++
+		r.node.next = r.n2r(n)
+	}
 }
 
 /* reference to node */
-func (r *Radix)r2n(v uint32)(*Node) {
+func (r *Radix)r2n(v uint32)(*node) {
 	if v == null {
 		return nil
 	}
-	return &r.node.pool[v >> 16].nodes[v & 0xffff]
+	if is_leaf(v) {
+		return &r.leaf.pool[(v >> 16) & 0x7fff].nodes[v & 0xffff].node
+	} else {
+		return &r.node.pool[v >> 16].nodes[v & 0xffff]
+	}
 }
 
-func (r *Radix)growth() {
-	var c *chunk
+func (r *Radix)node_growth() {
+	var c *node_chunk
 	var i int
 
 	if len(r.node.pool) >= 32768 {
 		panic("reach the maximum number of node pools allowed")
 	}
-	c = &chunk{}
+	c = &node_chunk{}
 	c.ptr = (uintptr)(unsafe.Pointer(&c.nodes[0]))
 	r.node.pool = append(r.node.pool, c)
 	r.node.free += 65536
@@ -80,6 +125,25 @@ func (r *Radix)growth() {
 		}
 		c.nodes[i].Left = r.node.next
 		r.node.next = r.n2r(&c.nodes[i])
+	}
+}
+
+func (r *Radix)leaf_growth() {
+	var c *leaf_chunk
+	var i int
+
+	if len(r.leaf.pool) >= 32768 {
+		panic("reach the maximum number of node pools allowed")
+	}
+	c = &leaf_chunk{}
+	c.ptr = (uintptr)(unsafe.Pointer(&c.nodes[0]))
+	r.leaf.pool = append(r.leaf.pool, c)
+	r.leaf.free += 65536
+	r.leaf.capacity += 65536
+	r.add_range(c.ptr, (uintptr)(unsafe.Pointer(&c.nodes[65536 - 1])), len(r.leaf.pool) - 1, kind_leaf)
+	for i, _ = range c.nodes {
+		c.nodes[i].node.Left = r.leaf.next
+		r.leaf.next = r.n2r(&c.nodes[i].node)
 	}
 }
 
@@ -124,14 +188,14 @@ func (r *Radix)add_range(start uintptr, end uintptr, index int, kind int) {
 /* Give a node and return its reference. If the node is not
  * from a local pool return 0.
  */
-func (r *Radix)n2r(n *Node)(uint32) {
+func (r *Radix)n2r(n *node)(uint32) {
 	var left int
 	var right int
 	var pivot int
 	var index int
 	var p uintptr
-	var c *chunk
-	var k uint32
+	var cn *node_chunk
+	var cl *leaf_chunk
 	var kind int
 
 	p = uintptr(unsafe.Pointer(n))
@@ -161,11 +225,11 @@ func (r *Radix)n2r(n *Node)(uint32) {
 			return 0
 		}
 	}
-	c = r.node.pool[index]
 	if kind == kind_node {
-		k = 0x00000000
+		cn = r.node.pool[index]
+		return (uint32(index) << 16) | (uint32(p - cn.ptr) / node_sz)
 	} else {
-		k = 0x80000000
+		cl = r.leaf.pool[index]
+		return 0x80000000 | (uint32(index) << 16) | (uint32(p - cl.ptr) / leaf_sz)
 	}
-	return k | (uint32(index) << 16) | (uint32(p - c.ptr) / node_sz)
 }

@@ -13,12 +13,14 @@ import "strings"
 import "testing"
 import "time"
 
-func display_node(r *Radix, n *Node, level int, branch string) {
+func display_node(r *Radix, n *node, level int, branch string) {
 	var typ string
 	var ip net.IPNet
 	var b []byte
+	var ref uint32
 
-	if n.Data != nil {
+	ref = r.n2r(n)
+	if is_leaf(ref) {
 		typ = "LEAF"
 	} else {
 		typ = "NODE"
@@ -212,18 +214,18 @@ func Benchmark_Radix(t *testing.B) {
 	/* perform full scan */
 
 	now = time.Now()
-	node = r.r2n(r.Node)
+	node = r.First()
 	for {
 		node = r.Next(node)
 		if node == nil {
 			break
 		}
-		b = []byte(node.Bytes)
+		b = []byte(node.node.Bytes)
 		for len(b) < 4 {
 			b = append([]byte{0x00}, b...)
 		}
 		ip2.IP = net.IP(b)
-		ip2.Mask = net.CIDRMask(int(node.End) + 1, 32)
+		ip2.Mask = net.CIDRMask(int(node.node.End) + 1, 32)
 //		fmt.Printf("%s\n", ip2.String())
 	}
 	step = time.Now()
@@ -235,12 +237,12 @@ func Benchmark_Radix(t *testing.B) {
 	if node == nil {
 		panic("first cannot be null")
 	}
-	b = []byte(node.Bytes)
+	b = []byte(node.node.Bytes)
 	for len(b) < 4 {
 		b = append([]byte{0x00}, b...)
 	}
 	ip2.IP = net.IP(b)
-	ip2.Mask = net.CIDRMask(int(node.End) + 1, 32)
+	ip2.Mask = net.CIDRMask(int(node.node.End) + 1, 32)
 	fmt.Printf("first = %s\n", ip2.String())
 
 	/* Return last entry */
@@ -249,12 +251,12 @@ func Benchmark_Radix(t *testing.B) {
 	if node == nil {
 		panic("first cannot be null")
 	}
-	b = []byte(node.Bytes)
+	b = []byte(node.node.Bytes)
 	for len(b) < 4 {
 		b = append([]byte{0x00}, b...)
 	}
 	ip2.IP = net.IP(b)
-	ip2.Mask = net.CIDRMask(int(node.End) + 1, 32)
+	ip2.Mask = net.CIDRMask(int(node.node.End) + 1, 32)
 	fmt.Printf("last = %s\n", ip2.String())
 
 	/* Returrn all cildrens of key 255.255.224.0/20 */
@@ -273,12 +275,12 @@ func Benchmark_Radix(t *testing.B) {
 	it = r.NewIter(&key, ml)
 	for it.Next() {
 		node = it.Get()
-		b = []byte(node.Bytes)
+		b = []byte(node.node.Bytes)
 		for len(b) < 4 {
 			b = append([]byte{0x00}, b...)
 		}
 		ip2.IP = net.IP(b)
-		ip2.Mask = net.CIDRMask(int(node.End) + 1, 32)
+		ip2.Mask = net.CIDRMask(int(node.node.End) + 1, 32)
 		fmt.Printf("%s contains %s\n", ip3.String(), ip2.String())
 	}
 
@@ -318,7 +320,7 @@ func Test_Radix(t *testing.T) {
 	for it.Next() {
 		n = it.Get()
 		t.Errorf("Case: we have one entry in the tree, initiate browsing on unconcerned network, " +
-		         "expect 0 iteration. Got one entry: %s", n.String())
+		         "expect 0 iteration. Got one entry: %s", r.String(&n.node))
 	}
 
 	ipn = &net.IPNet{}
@@ -341,8 +343,8 @@ func Test_Radix(t *testing.T) {
 }
 
 func Test_Equal(t *testing.T) {
-	var n1 Node
-	var n2 Node
+	var n1 node
+	var n2 node
 	var k []byte
 
 	/* test equal */
@@ -373,8 +375,8 @@ func Test_Equal(t *testing.T) {
 }
 
 func TestIsAlignedChildrenOf(t *testing.T) {
-	var n1 Node
-	var n2 Node
+	var n1 node
+	var n2 node
 
 	/* full align / child: extact match */
 

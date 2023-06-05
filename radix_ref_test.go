@@ -9,15 +9,15 @@ func Test_ref(t *testing.T) {
 	var r *Radix
 	var ref uint32
 	var ref_back uint32
-	var nref *Node
-	var nref_back *Node
+	var nref *node
+	var nref_back *node
 
 	r = NewRadix()
-	r.growth()
-	r.growth()
-	r.growth()
-	r.growth()
-	r.growth()
+	r.node_growth()
+	r.node_growth()
+	r.node_growth()
+	r.node_growth()
+	r.node_growth()
 
 	if r.node.capacity != (5 * 65536) - 1 {
 		t.Fatalf("Expect capacity of %d, got %d", (5 * 65536) - 1, r.node.capacity)

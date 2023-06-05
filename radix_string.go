@@ -92,5 +92,5 @@ func (r *Radix)StringNewIter(str string)(*Iter) {
 }
 
 func (n *Node)StringGetKey()(string) {
-	return string(n.Bytes)
+	return string(n.node.Bytes)
 }
