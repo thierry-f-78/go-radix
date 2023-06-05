@@ -11,116 +11,116 @@ func Test_ptr_range(t *testing.T) {
 
 	r = &Radix{}
 
-	r.add_range(12, 13, 1)
+	r.add_range(12, 13, 1, 0)
 	want = []ptr_range{
-		ptr_range{12, 13, 1},
+		ptr_range{12, 13, 1, 0},
 	}
 	if !reflect.DeepEqual(r.ptr_range, want) {
 		t.Errorf("Unmatched:\n   got: %#v\nexpect: %#v\n", r.ptr_range, want)
 	}
 
-	r.add_range(14, 15, 2)
+	r.add_range(14, 15, 2, 0)
 	want = []ptr_range{
-		ptr_range{12, 13, 1},
-		ptr_range{14, 15, 2},
+		ptr_range{12, 13, 1, 0},
+		ptr_range{14, 15, 2, 0},
 	}
 	if !reflect.DeepEqual(r.ptr_range, want) {
 		t.Errorf("Unmatched:\n   got: %#v\nexpect: %#v\n", r.ptr_range, want)
 	}
 
-	r.add_range(1, 2, 3)
+	r.add_range(1, 2, 3, 0)
 	want = []ptr_range{
-		ptr_range{1, 2, 3},
-		ptr_range{12, 13, 1},
-		ptr_range{14, 15, 2},
+		ptr_range{1, 2, 3, 0},
+		ptr_range{12, 13, 1, 0},
+		ptr_range{14, 15, 2, 0},
 	}
 	if !reflect.DeepEqual(r.ptr_range, want) {
 		t.Errorf("Unmatched:\n   got: %#v\nexpect: %#v\n", r.ptr_range, want)
 	}
 
-	r.add_range(6, 9, 4)
+	r.add_range(6, 9, 4, 0)
 	want = []ptr_range{
-		ptr_range{1, 2, 3},
-		ptr_range{6, 9, 4},
-		ptr_range{12, 13, 1},
-		ptr_range{14, 15, 2},
+		ptr_range{1, 2, 3, 0},
+		ptr_range{6, 9, 4, 0},
+		ptr_range{12, 13, 1, 0},
+		ptr_range{14, 15, 2, 0},
 	}
 	if !reflect.DeepEqual(r.ptr_range, want) {
 		t.Errorf("Unmatched:\n   got: %#v\nexpect: %#v\n", r.ptr_range, want)
 	}
 
-	r.add_range(7, 8, 5)
+	r.add_range(7, 8, 5, 0)
 	want = []ptr_range{
-		ptr_range{1, 2, 3},
-		ptr_range{6, 9, 4},
-		ptr_range{12, 13, 1},
-		ptr_range{14, 15, 2},
+		ptr_range{1, 2, 3, 0},
+		ptr_range{6, 9, 4, 0},
+		ptr_range{12, 13, 1, 0},
+		ptr_range{14, 15, 2, 0},
 	}
 	if !reflect.DeepEqual(r.ptr_range, want) {
 		t.Errorf("Unmatched:\n   got: %#v\nexpect: %#v\n", r.ptr_range, want)
 	}
 
-	r.add_range(6, 7, 5)
+	r.add_range(6, 7, 5, 0)
 	want = []ptr_range{
-		ptr_range{1, 2, 3},
-		ptr_range{6, 9, 4},
-		ptr_range{12, 13, 1},
-		ptr_range{14, 15, 2},
+		ptr_range{1, 2, 3, 0},
+		ptr_range{6, 9, 4, 0},
+		ptr_range{12, 13, 1, 0},
+		ptr_range{14, 15, 2, 0},
 	}
 	if !reflect.DeepEqual(r.ptr_range, want) {
 		t.Errorf("Unmatched:\n   got: %#v\nexpect: %#v\n", r.ptr_range, want)
 	}
 
-	r.add_range(7, 8, 5)
+	r.add_range(7, 8, 5, 0)
 	want = []ptr_range{
-		ptr_range{1, 2, 3},
-		ptr_range{6, 9, 4},
-		ptr_range{12, 13, 1},
-		ptr_range{14, 15, 2},
+		ptr_range{1, 2, 3, 0},
+		ptr_range{6, 9, 4, 0},
+		ptr_range{12, 13, 1, 0},
+		ptr_range{14, 15, 2, 0},
 	}
 	if !reflect.DeepEqual(r.ptr_range, want) {
 		t.Errorf("Unmatched:\n   got: %#v\nexpect: %#v\n", r.ptr_range, want)
 	}
 
-	r.add_range(6, 9, 5)
+	r.add_range(6, 9, 5, 0)
 	want = []ptr_range{
-		ptr_range{1, 2, 3},
-		ptr_range{6, 9, 4},
-		ptr_range{12, 13, 1},
-		ptr_range{14, 15, 2},
+		ptr_range{1, 2, 3, 0},
+		ptr_range{6, 9, 4, 0},
+		ptr_range{12, 13, 1, 0},
+		ptr_range{14, 15, 2, 0},
 	}
 	if !reflect.DeepEqual(r.ptr_range, want) {
 		t.Errorf("Unmatched:\n   got: %#v\nexpect: %#v\n", r.ptr_range, want)
 	}
 
-	r.add_range(5, 8, 5)
+	r.add_range(5, 8, 5, 0)
 	want = []ptr_range{
-		ptr_range{1, 2, 3},
-		ptr_range{6, 9, 4},
-		ptr_range{12, 13, 1},
-		ptr_range{14, 15, 2},
+		ptr_range{1, 2, 3, 0},
+		ptr_range{6, 9, 4, 0},
+		ptr_range{12, 13, 1, 0},
+		ptr_range{14, 15, 2, 0},
 	}
 	if !reflect.DeepEqual(r.ptr_range, want) {
 		t.Errorf("Unmatched:\n   got: %#v\nexpect: %#v\n", r.ptr_range, want)
 	}
 
-	r.add_range(8, 10, 5)
+	r.add_range(8, 10, 5, 0)
 	want = []ptr_range{
-		ptr_range{1, 2, 3},
-		ptr_range{6, 9, 4},
-		ptr_range{12, 13, 1},
-		ptr_range{14, 15, 2},
+		ptr_range{1, 2, 3, 0},
+		ptr_range{6, 9, 4, 0},
+		ptr_range{12, 13, 1, 0},
+		ptr_range{14, 15, 2, 0},
 	}
 	if !reflect.DeepEqual(r.ptr_range, want) {
 		t.Errorf("Unmatched:\n   got: %#v\nexpect: %#v\n", r.ptr_range, want)
 	}
 
-	r.add_range(5, 10, 5)
+	r.add_range(5, 10, 5, 0)
 	want = []ptr_range{
-		ptr_range{1, 2, 3},
-		ptr_range{6, 9, 4},
-		ptr_range{12, 13, 1},
-		ptr_range{14, 15, 2},
+		ptr_range{1, 2, 3, 0},
+		ptr_range{6, 9, 4, 0},
+		ptr_range{12, 13, 1, 0},
+		ptr_range{14, 15, 2, 0},
 	}
 	if !reflect.DeepEqual(r.ptr_range, want) {
 		t.Errorf("Unmatched:\n   got: %#v\nexpect: %#v\n", r.ptr_range, want)
