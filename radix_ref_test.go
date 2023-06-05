@@ -19,8 +19,8 @@ func Test_ref(t *testing.T) {
 	r.growth()
 	r.growth()
 
-	if r.capacity != 5 * 65536 {
-		t.Fatalf("Expect capacity of %d, got %d", 5 * 65536, r.capacity)
+	if r.capacity != (5 * 65536) - 1 {
+		t.Fatalf("Expect capacity of %d, got %d", (5 * 65536) - 1, r.capacity)
 	}
 
 	ref = uint32(3 << 16 | 4343)

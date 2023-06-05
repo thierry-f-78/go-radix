@@ -17,7 +17,7 @@ type Node struct {
 	/* 48 */
 }
 
-const null = uint32(0x80000000)
+const null = uint32(0x00000000)
 const node_sz = uint32(unsafe.Sizeof(Node{}))
 
 type chunk struct {
@@ -79,6 +79,15 @@ func (r *Radix)growth() {
 	r.capacity += 65536
 	r.add_range(c.ptr, (uintptr)(unsafe.Pointer(&c.nodes[65536 - 1])), len(r.pool) - 1)
 	for i, _ = range c.nodes {
+		/* first node of the first list the NULL node, so it never be used.
+		 * to make the code simpler, it is allocated, but it is never set
+		 * in the free nodes list
+		 */
+		if len(r.pool) == 1 && i == 0 {
+			r.free--
+			r.capacity--
+			continue
+		}
 		c.nodes[i].Left = r.next
 		r.next = r.n2r(&c.nodes[i])
 	}
