@@ -83,6 +83,6 @@ func (r *Radix)n2r(n *Node)(uint32) {
 			return 0
 		}
 	}
-	c = r.pool[pool_index]
+	c = r.node.pool[pool_index]
 	return (uint32(pool_index) << 16) | (uint32(p - c.ptr) / node_sz)
 }

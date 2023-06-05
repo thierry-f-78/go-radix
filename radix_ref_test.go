@@ -19,8 +19,8 @@ func Test_ref(t *testing.T) {
 	r.growth()
 	r.growth()
 
-	if r.capacity != (5 * 65536) - 1 {
-		t.Fatalf("Expect capacity of %d, got %d", (5 * 65536) - 1, r.capacity)
+	if r.node.capacity != (5 * 65536) - 1 {
+		t.Fatalf("Expect capacity of %d, got %d", (5 * 65536) - 1, r.node.capacity)
 	}
 
 	ref = uint32(3 << 16 | 4343)
@@ -29,7 +29,7 @@ func Test_ref(t *testing.T) {
 		t.Fatalf("Expect reference %x, got %x", ref, ref_back)
 	}
 
-	nref = &r.pool[3].nodes[16332]
+	nref = &r.node.pool[3].nodes[16332]
 	nref_back = r.r2n(r.n2r(nref))
 	if nref != nref_back {
 		t.Fatalf("Expect reference %p, got %p", nref, nref_back)
