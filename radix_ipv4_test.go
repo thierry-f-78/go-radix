@@ -78,14 +78,15 @@ func TestRadixIPv4(t *testing.T) {
 	n = r.IPv4Get(nw1)
 	if n == nil {
 		t.Errorf("Should match")
-	}
-	nw2 = n.IPv4GetNet()
-	if !nw2.IP.Equal(nw1.IP) {
-		t.Errorf("Should match")
-	}
-	s = n.Data.(string)
-	if s != "test - 10.4.0.0/16" {
-		t.Errorf("Should match")
+	} else {
+		nw2 = n.IPv4GetNet()
+		if !nw2.IP.Equal(nw1.IP) {
+			t.Errorf("Should match")
+		}
+		s = n.Data.(string)
+		if s != "test - 10.4.0.0/16" {
+			t.Errorf("Should match")
+		}
 	}
 
 	/* Lookup longest */
@@ -97,14 +98,15 @@ func TestRadixIPv4(t *testing.T) {
 	n = r.IPv4LookupLonguest(nw2)
 	if n == nil {
 		t.Errorf("Should match")
-	}
-	nw2 = n.IPv4GetNet()
-	if !nw2.IP.Equal(nw1.IP) {
-		t.Errorf("Should match")
-	}
-	s = n.Data.(string)
-	if s != "test - 10.4.0.0/16" {
-		t.Errorf("Should match")
+	} else {
+		nw2 = n.IPv4GetNet()
+		if !nw2.IP.Equal(nw1.IP) {
+			t.Errorf("Should match")
+		}
+		s = n.Data.(string)
+		if s != "test - 10.4.0.0/16" {
+			t.Errorf("Should match")
+		}
 	}
 
 	/* Insert parent network */
@@ -123,14 +125,15 @@ func TestRadixIPv4(t *testing.T) {
 	n = r.IPv4LookupLonguest(nw2)
 	if n == nil {
 		t.Errorf("Should match")
-	}
-	nw2 = n.IPv4GetNet()
-	if !nw2.IP.Equal(nw1.IP) {
-		t.Errorf("Should match")
-	}
-	s = n.Data.(string)
-	if s != "test - 10.4.0.0/16" {
-		t.Errorf("Should match")
+	} else {
+		nw2 = n.IPv4GetNet()
+		if !nw2.IP.Equal(nw1.IP) {
+			t.Errorf("Should match")
+		}
+		s = n.Data.(string)
+		if s != "test - 10.4.0.0/16" {
+			t.Errorf("Should match")
+		}
 	}
 
 	/* Lookup longest path */

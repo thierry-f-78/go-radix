@@ -22,13 +22,14 @@ func TestRadixUInt64(t *testing.T) {
 	n = r.UInt64Get(nw1)
 	if n == nil {
 		t.Errorf("Should match")
-	}
-	nw2 = n.UInt64GetValue()
-	if nw2 != nw1 {
-		t.Errorf("Should match")
-	}
-	s = n.Data.(string)
-	if s != "test - nw1" {
-		t.Errorf("Should match")
+	} else {
+		nw2 = n.UInt64GetValue()
+		if nw2 != nw1 {
+			t.Errorf("Should match")
+		}
+		s = n.Data.(string)
+		if s != "test - nw1" {
+			t.Errorf("Should match")
+		}
 	}
 }

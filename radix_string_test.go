@@ -6,6 +6,7 @@ import "fmt"
 import "strings"
 import "testing"
 
+//lint:ignore U1000 On demand function for debug
 func display_node_string(r *Radix, n *node, level int, branch string) {
 	var typ string
 	var ref uint32
@@ -27,6 +28,7 @@ func display_node_string(r *Radix, n *node, level int, branch string) {
 
 }
 
+//lint:ignore U1000 On demand function for debug
 func display_radix_string(r *Radix) {
 
 	if r.Node == null {
@@ -55,52 +57,56 @@ func Test_string(t *testing.T) {
 	n = r.StringGet("aaaa")
 	if n == nil {
 		t.Errorf("aaaa should be found")
-	}
-	if n.StringGetKey() != "aaaa" {
-		t.Errorf("aaaa should be found")
-	}
-	s, _ = n.Data.(string)
-	if s != "key aaaa" {
-		t.Errorf("\"key aaaa\" should be found")
+	} else {
+		if n.StringGetKey() != "aaaa" {
+			t.Errorf("aaaa should be found")
+		}
+		s, _ = n.Data.(string)
+		if s != "key aaaa" {
+			t.Errorf("\"key aaaa\" should be found")
+		}
 	}
 
 	/* Lookup exact */
 	n = r.StringGet("aa")
 	if n == nil {
 		t.Errorf("aa should be found")
-	}
-	if n.StringGetKey() != "aa" {
-		t.Errorf("aa should be found")
-	}
-	s, _ = n.Data.(string)
-	if s != "key aa" {
-		t.Errorf("\"key aa\" should be found")
+	} else {
+		if n.StringGetKey() != "aa" {
+			t.Errorf("aa should be found")
+		}
+		s, _ = n.Data.(string)
+		if s != "key aa" {
+			t.Errorf("\"key aa\" should be found")
+		}
 	}
 
 	/* lookup longest prefix */
 	n = r.StringLookupLonguest("aaaa stayin alive")
 	if n == nil {
 		t.Errorf("aaaa should be found")
-	}
-	if n.StringGetKey() != "aaaa" {
-		t.Errorf("aaaa should be found")
-	}
-	s, _ = n.Data.(string)
-	if s != "key aaaa" {
-		t.Errorf("\"key aaaa\" should be found")
+	} else {
+		if n.StringGetKey() != "aaaa" {
+			t.Errorf("aaaa should be found")
+		}
+		s, _ = n.Data.(string)
+		if s != "key aaaa" {
+			t.Errorf("\"key aaaa\" should be found")
+		}
 	}
 
 	/* lookup longest prefix */
 	n = r.StringLookupLonguest("aa stayin alive")
 	if n == nil {
 		t.Errorf("aa should be found")
-	}
-	if n.StringGetKey() != "aa" {
-		t.Errorf("aa should be found")
-	}
-	s, _ = n.Data.(string)
-	if s != "key aa" {
-		t.Errorf("\"key aa\" should be found")
+	} else {
+		if n.StringGetKey() != "aa" {
+			t.Errorf("aa should be found")
+		}
+		s, _ = n.Data.(string)
+		if s != "key aa" {
+			t.Errorf("\"key aa\" should be found")
+		}
 	}
 
 	/* lookup longest prefix */

@@ -13,6 +13,7 @@ import "strings"
 import "testing"
 import "time"
 
+//lint:ignore U1000 on demand function for debug
 func display_node(r *Radix, n *node, level int, branch string) {
 	var typ string
 	var ip net.IPNet
@@ -43,6 +44,7 @@ func display_node(r *Radix, n *node, level int, branch string) {
 
 }
 
+//lint:ignore U1000 on demand function for debug
 func display_radix(r *Radix) {
 
 	if r.Node == null {
