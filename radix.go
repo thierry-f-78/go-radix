@@ -53,6 +53,34 @@ func (r *Radix)Len()(int) {
 	return r.length
 }
 
+type Node_counters struct {
+	Capacity int
+	Free int
+	Size int
+}
+
+type Counters struct {
+	Length int
+	Node Node_counters
+	Leaf Node_counters
+}
+
+func (r *Radix)Counters()(*Counters) {
+	return &Counters{
+		Length: r.length,
+		Node: Node_counters{
+			Capacity: r.node.capacity,
+			Free: r.node.free,
+			Size: int(node_sz),
+		},
+		Leaf: Node_counters{
+			Capacity: r.leaf.capacity,
+			Free: r.leaf.free,
+			Size: int(leaf_sz),
+		},
+	}
+}
+
 /* Return true if nodes are equal */
 func Equal(n1 *Node, n2 *Node)(bool) {
 	return equal(&n1.node, &n2.node)
