@@ -2,6 +2,7 @@
 
 package radix
 
+import "compress/gzip"
 import "encoding/binary"
 import "bufio"
 import "fmt"
@@ -137,19 +138,24 @@ func Benchmark_Radix(t *testing.B) {
 	var b []byte
 	var hit int
 	var miss int
+	var zr *gzip.Reader
 
 	r = NewRadix()
 
-	/* Load file data/ip.db */
+	/* Load file data/ip.db.gz */
 
-	file, err = os.Open("data/ip.db")
+	file, err = os.Open("data/ip.db.gz")
 	if err != nil {
 		panic(err)
 	}
 	defer file.Close()
+	zr, err = gzip.NewReader(file)
+	if err != nil {
+		panic(err)
+	}
 	count = 0
 	now = time.Now()
-	scanner = bufio.NewScanner(file)
+	scanner = bufio.NewScanner(zr)
 	for scanner.Scan() {
 
 		tokens = strings.Split(scanner.Text(), "|")
