@@ -581,7 +581,7 @@ func (r *Radix)del(n *node) {
 		}
 
 		/* if the parent node is a leaf, do not remove */
-		if !is_leaf(n.Parent) {
+		if is_leaf(n.Parent) {
 			r.free(n)
 			return
 		}
