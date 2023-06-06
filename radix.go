@@ -17,10 +17,10 @@ type node struct {
 	/* 32 */
 }
 
-/* This is a tree leaf. */
+// Node is a struct which describe leaf of the tree.
 type Node struct {
-	/* 32 */ node node /* It is absolutely necessary this member was the first */
-	/* 16 */ Data interface{} /* Contains the list of interface matching the node */
+	/* 32 */ node node // It is absolutely necessary this member was the first
+	/* 16 */ Data interface{} // Contains interface matching the node
 	/* 48 */
 }
 
@@ -32,6 +32,7 @@ const null = uint32(0x00000000)
 const node_sz = uint32(unsafe.Sizeof(node{}))
 const leaf_sz = uint32(unsafe.Sizeof(Node{}))
 
+// Radix is the struct which contains the tree root.
 type Radix struct {
 	Node uint32
 	length int
@@ -40,6 +41,7 @@ type Radix struct {
 	ptr_range []ptr_range
 }
 
+// NewRadix return initialized *Radix tree.
 func NewRadix()(*Radix) {
 	var radix *Radix
 
@@ -49,22 +51,27 @@ func NewRadix()(*Radix) {
 	return radix
 }
 
+// Len return the number of leaf in the tree.
 func (r *Radix)Len()(int) {
 	return r.length
 }
 
+// Node_counters describe tree node/leaf counters
 type Node_counters struct {
-	Capacity int
-	Free int
-	Size int
+	Capacity int // the total nodes/leaf capacity
+	Free int // the number of free nodes/leaf
+	Size int // the size of a node/leaf in bytes
 }
 
+// Node_counters describe tree counters
 type Counters struct {
-	Length int
-	Node Node_counters
-	Leaf Node_counters
+	Length int // Number of leaf used in the tree
+	Node Node_counters // Counters relative to nodes
+	Leaf Node_counters // counters relative to leaf.
 }
 
+// Counters return counters useful to monitor the radix tree
+// usage.
 func (r *Radix)Counters()(*Counters) {
 	return &Counters{
 		Length: r.length,
@@ -81,7 +88,8 @@ func (r *Radix)Counters()(*Counters) {
 	}
 }
 
-/* Return true if nodes are equal */
+// Equal return true if nodes are equal. Node are equal if there are the same
+// prefix length and bytes.
 func Equal(n1 *Node, n2 *Node)(bool) {
 	return equal(&n1.node, &n2.node)
 }
@@ -136,9 +144,8 @@ func (n *node)isAlignedChildrenOf(p *node)(bool) {
 	return are_zero([]byte(n.Bytes), int(p.End) + 1, int(n.End))
 }
 
-/* Take the radix tree and a network
- * return true if leaf match and the list of nodes go throught
- */
+// LookupLonguestPath take the radix tree and a key/length prefix, return the list
+// of all leaf matching the prefix. If none match, return nil
 func (r *Radix)LookupLonguestPath(data *[]byte, length int16)([]*Node) {
 	var node *node
 	var path_node []*Node
@@ -187,6 +194,8 @@ func (r *Radix)LookupLonguestPath(data *[]byte, length int16)([]*Node) {
 	}
 }
 
+// LookupLonguest get a key/length prefix and return the leaf which match the
+// longest part of the prefix. Return nil if none match.
 func (r *Radix)LookupLonguest(data *[]byte, length int16)(*Node) {
 	var node *node
 	var last_node *Node
@@ -237,6 +246,8 @@ func (r *Radix)LookupLonguest(data *[]byte, length int16)(*Node) {
 	}
 }
 
+// Get gets a key/length prefix and return exact match of the prefix. Exact match
+// is a node wich match the prefix bit and the length.
 func (r *Radix)Get(data *[]byte, length int16)(*Node) {
 	var n *Node
 	n = r.LookupLonguest(data, length)
@@ -317,7 +328,9 @@ func (r *Radix)replace(o *node, n *node) {
 	}
 }
 
-/* Return nil is node is inserted, otherwise return existing node */
+// Insert key/length prefix in the tree. The tree accept only unique value, if
+// the prefix already exists in the tree, return existing leaf,
+// otherwaise return nil.
 func (r *Radix)Insert(key *[]byte, length int16, data interface{})(*Node, bool) {
 	var leaf *Node
 	var lookup_node *node
@@ -499,6 +512,7 @@ func (r *Radix)Insert(key *[]byte, length int16, data interface{})(*Node, bool) 
 	return leaf, true
 }
 
+// Delete remove Node from the tree.
 func (r *Radix)Delete(n *Node) {
 	r.del(&n.node)
 	r.length--
@@ -585,6 +599,9 @@ func (r *Radix)del(n *node) {
  *           \  /
  *            ()
  */
+
+// Next return next Node in browsing order. Return nil
+// if we reach end of tree.
 func (r *Radix)Next(n *Node)(*Node) {
 	return r.next(&n.node)
 }
@@ -643,6 +660,8 @@ func (r *Radix)next(n *node)(*Node) {
 	}
 }
 
+// First return first node of the tree. Return nil if the
+// tree is empty.
 func (r *Radix)First()(*Node) {
 	if r.Node == null {
 		return nil
@@ -657,6 +676,8 @@ func (r *Radix)First()(*Node) {
 	return r.next(r.r2n(r.Node))
 }
 
+// Last return the last node of the tree. Return nil
+// if the tree is empty.
 func (r *Radix)Last()(*Node) {
 	var n *node
 
@@ -680,6 +701,7 @@ func (r *Radix)Last()(*Node) {
 	}
 }
 
+// Iter is a struct for managing iteration
 type Iter struct {
 	node *node
 	next_node *node
@@ -688,6 +710,8 @@ type Iter struct {
 	r *Radix
 }
 
+// NewIter return struct Iter for browsing all nodes there children
+// match the given key/length prefix.
 func (r *Radix)NewIter(key *[]byte, length int16)(*Iter) {
 	var i *Iter
 	var ref uint32
@@ -742,12 +766,16 @@ func (i *Iter)set_next()() {
 	}
 }
 
+// Next return true if there next node avalaible. This function
+// also perform lookup for the next node.
 func (i *Iter)Next()(bool) {
 	i.node = i.next_node
 	i.set_next()
 	return i.node != nil
 }
 
+// Get return the node. Many calls on this function return  the same
+// value.
 func (i *Iter)Get()(*Node) {
 	return n2N(i.node)
 }
