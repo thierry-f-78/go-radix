@@ -15,13 +15,11 @@ import "testing"
 import "time"
 
 //lint:ignore U1000 on demand function for debug
-func display_node(r *Radix, n *node, level int, branch string) {
+func display_node(r *Radix, n *node, ref uint32, level int, branch string) {
 	var typ string
 	var ip net.IPNet
 	var b []byte
-	var ref uint32
 
-	ref = r.n2r(n)
 	if is_leaf(ref) {
 		typ = "LEAF"
 	} else {
@@ -35,12 +33,12 @@ func display_node(r *Radix, n *node, level int, branch string) {
 	ip.IP = net.IP(b)
 	ip.Mask = net.CIDRMask(int(n.End) + 1, 32)
 
-	fmt.Printf("%s%s: %p/%s start=%d end=%d ip=%s\n", strings.Repeat("   ", level), branch, n, typ, n.Start, n.End, ip.String())
+	fmt.Printf("%s%s: %p(%08x)/%s start=%d end=%d ip=%s\n", strings.Repeat("   ", level), branch, n, ref, typ, n.Start, n.End, ip.String())
 	if n.Left != null {
-		display_node(r, r.r2n(n.Left), level+1, "L")
+		display_node(r, r.r2n(n.Left), n.Left, level+1, "L")
 	}
 	if n.Right != null {
-		display_node(r, r.r2n(n.Right), level+1, "R")
+		display_node(r, r.r2n(n.Right), n.Right, level+1, "R")
 	}
 
 }
@@ -53,7 +51,7 @@ func display_radix(r *Radix) {
 		return
 	}
 
-	display_node(r, r.r2n(r.Node), 0, "-")
+	display_node(r, r.r2n(r.Node), r.Node, 0, "-")
 }
 
 func TestRadix(t *testing.T) {
@@ -306,13 +304,21 @@ func Benchmark_Radix(t *testing.B) {
 	fmt.Printf("Delete %d data in %fs\n", count, step.Sub((now)).Seconds())
 }
 
-func Test_Radix(t *testing.T) {
-	var r *Radix
-	var ipn *net.IPNet
-	var it *Iter
+/* This function browse the tree and validate its integrity */
+func browse(t *testing.T, r *Radix) {
 	var n *Node
+	var s string
 
-	/* Check error case */
+	for n = r.First(); n != nil; n = r.Next(n) {
+		s = n.Data.(string)
+		if s == "" {
+			t.Errorf("expect non-empty string")
+		}
+	}
+}
+
+func create_radix_test()(r *Radix) {
+	var ipn *net.IPNet
 
 	r = NewRadix()
 
@@ -324,30 +330,278 @@ func Test_Radix(t *testing.T) {
 	ipn = &net.IPNet{}
 	ipn.IP = net.ParseIP("10.0.0.0")
 	ipn.Mask = net.CIDRMask(8, 32)
-	it = r.IPv4NewIter(ipn)
-	for it.Next() {
-		n = it.Get()
-		t.Errorf("Case: we have one entry in the tree, initiate browsing on unconcerned network, " +
-		         "expect 0 iteration. Got one entry: %s", r.get_string(&n.node))
+	r.IPv4Insert(ipn, "Network 10.0.0.0/8 - 2")
+
+	ipn = &net.IPNet{}
+	ipn.IP = net.ParseIP("10.0.0.0")
+	ipn.Mask = net.CIDRMask(10, 32)
+	r.IPv4Insert(ipn, "Network 10.0.0.0/10")
+
+	ipn = &net.IPNet{}
+	ipn.IP = net.ParseIP("10.64.0.0")
+	ipn.Mask = net.CIDRMask(10, 32)
+	r.IPv4Insert(ipn, "Network 10.64.0.0/10")
+
+	ipn = &net.IPNet{}
+	ipn.IP = net.ParseIP("10.64.0.0")
+	ipn.Mask = net.CIDRMask(9, 32)
+	r.IPv4Insert(ipn, "Network 10.64.0.0/9")
+
+	ipn = &net.IPNet{}
+	ipn.IP = net.ParseIP("10.64.0.0")
+	ipn.Mask = net.CIDRMask(11, 32)
+	r.IPv4Insert(ipn, "Network 10.64.0.0/11")
+
+	ipn = &net.IPNet{}
+	ipn.IP = net.ParseIP("10.96.0.0")
+	ipn.Mask = net.CIDRMask(11, 32)
+	r.IPv4Insert(ipn, "Network 10.96.0.0/11")
+
+	ipn = &net.IPNet{}
+	ipn.IP = net.ParseIP("100.0.0.0")
+	ipn.Mask = net.CIDRMask(24, 32)
+	r.IPv4Insert(ipn, "Network 100.0.0.0/24")
+
+	ipn = &net.IPNet{}
+	ipn.IP = net.ParseIP("100.0.0.0")
+	ipn.Mask = net.CIDRMask(15, 32)
+	r.IPv4Insert(ipn, "Network 100.0.0.0/15")
+
+	ipn = &net.IPNet{}
+	ipn.IP = net.ParseIP("100.7.0.0")
+	ipn.Mask = net.CIDRMask(24, 32)
+	r.IPv4Insert(ipn, "Network 100.7.0.0/24")
+
+	ipn = &net.IPNet{}
+	ipn.IP = net.ParseIP("100.7.0.0")
+	ipn.Mask = net.CIDRMask(15, 32)
+	r.IPv4Insert(ipn, "Network 100.7.0.0/15")
+
+	return r
+}
+
+func Test_Radix(t *testing.T) {
+	var r *Radix
+	var ipn *net.IPNet
+	var n *Node
+
+	/* Check error case */
+
+	r = NewRadix()
+
+	ipn = &net.IPNet{}
+	ipn.IP = net.ParseIP("0.0.0.0")
+	ipn.Mask = net.CIDRMask(0, 32)
+	r.IPv4Insert(ipn, "Network 0.0.0.0/0")
+	if r.length != 0 {
+		t.Errorf("Network 0.0.0.0/0 should not be inserted")
 	}
+	browse(t, r)
+
+	/* CASE #1
+	 */
+	ipn = &net.IPNet{}
+	ipn.IP = net.ParseIP("192.168.0.0")
+	ipn.Mask = net.CIDRMask(16, 32)
+	r.IPv4Insert(ipn, "Network 192.168.0.0/16")
+	browse(t, r)
+
+	/* CASE #2 
+	 *
+	 * Simple case, just detect existing node, and do nothing.
+	 */
 
 	ipn = &net.IPNet{}
 	ipn.IP = net.ParseIP("10.0.0.0")
 	ipn.Mask = net.CIDRMask(8, 32)
-	r.IPv4Insert(ipn, "Network 10.0.0.0/8")
+	r.IPv4Insert(ipn, "Network 10.0.0.0/8 - 2")
+	browse(t, r)
+
+	/* CASE #2 - end
+	 *
+	 * Add 10.0.0.0/10
+	 * Add 10.0.0.0/10
+	 * Add 10.64.0.0/10 -> create intermediate node 10.64.0.0/9
+	 */
+
+	ipn = &net.IPNet{}
+	ipn.IP = net.ParseIP("10.0.0.0")
+	ipn.Mask = net.CIDRMask(10, 32)
+	r.IPv4Insert(ipn, "Network 10.0.0.0/10")
+	browse(t, r)
+
+	ipn = &net.IPNet{}
+	ipn.IP = net.ParseIP("10.64.0.0")
+	ipn.Mask = net.CIDRMask(10, 32)
+	r.IPv4Insert(ipn, "Network 10.64.0.0/10")
+	browse(t, r)
+
+	ipn = &net.IPNet{}
+	ipn.IP = net.ParseIP("10.64.0.0")
+	ipn.Mask = net.CIDRMask(9, 32)
+	r.IPv4Insert(ipn, "Network 10.64.0.0/9")
+	browse(t, r)
+
+	/* CASE #3
+	 *
+	 * - left branch
+	 * - right branch
+	 */
+
+	ipn = &net.IPNet{}
+	ipn.IP = net.ParseIP("10.64.0.0")
+	ipn.Mask = net.CIDRMask(11, 32)
+	r.IPv4Insert(ipn, "Network 10.64.0.0/11")
+	browse(t, r)
+
+	ipn = &net.IPNet{}
+	ipn.IP = net.ParseIP("10.96.0.0")
+	ipn.Mask = net.CIDRMask(11, 32)
+	r.IPv4Insert(ipn, "Network 10.96.0.0/11")
+	browse(t, r)
+
+	/* CASE #4
+	 *
+	 */
+
+	ipn = &net.IPNet{}
+	ipn.IP = net.ParseIP("100.0.0.0")
+	ipn.Mask = net.CIDRMask(24, 32)
+	r.IPv4Insert(ipn, "Network 100.0.0.0/24")
+	browse(t, r)
+
+	ipn = &net.IPNet{}
+	ipn.IP = net.ParseIP("100.0.0.0")
+	ipn.Mask = net.CIDRMask(15, 32)
+	r.IPv4Insert(ipn, "Network 100.0.0.0/15")
+	browse(t, r)
+
+	ipn = &net.IPNet{}
+	ipn.IP = net.ParseIP("100.7.0.0")
+	ipn.Mask = net.CIDRMask(24, 32)
+	r.IPv4Insert(ipn, "Network 100.7.0.0/24")
+	browse(t, r)
+
+	ipn = &net.IPNet{}
+	ipn.IP = net.ParseIP("100.7.0.0")
+	ipn.Mask = net.CIDRMask(15, 32)
+	r.IPv4Insert(ipn, "Network 100.7.0.0/15")
+	browse(t, r)
+
+	/* Test delete node */
+
+	r = NewRadix()
+	ipn = &net.IPNet{}
+	ipn.IP = net.ParseIP("192.168.0.0")
+	ipn.Mask = net.CIDRMask(16, 32)
+	r.IPv4Insert(ipn, "Network 192.168.0.0/16")
+	n = r.IPv4Get(ipn)
+	r.Delete(n)
+	browse(t, r)
+
+	r = create_radix_test()
+	ipn = &net.IPNet{}
+	ipn.IP = net.ParseIP("192.168.0.0")
+	ipn.Mask = net.CIDRMask(16, 32)
+	n = r.IPv4Get(ipn)
+	r.Delete(n)
+	browse(t, r)
 
 	ipn = &net.IPNet{}
 	ipn.IP = net.ParseIP("10.0.0.0")
 	ipn.Mask = net.CIDRMask(8, 32)
-	it = r.IPv4NewIter(ipn)
-	n = nil
-	for it.Next() {
-		if n != nil {
-			t.Errorf("Case: we have two entries in the tree, initiate browsing on concerned " +
-			         "network, expect 1 iteration. Got at least two")
-		}
-		n = it.Get()
-	}
+	n = r.IPv4Get(ipn)
+	r.Delete(n)
+	browse(t, r)
+
+	ipn = &net.IPNet{}
+	ipn.IP = net.ParseIP("192.168.0.0")
+	ipn.Mask = net.CIDRMask(16, 32)
+	r = create_radix_test()
+	n = r.IPv4Get(ipn)
+	r.Delete(n)
+	browse(t, r)
+
+	ipn = &net.IPNet{}
+	ipn.IP = net.ParseIP("10.0.0.0")
+	ipn.Mask = net.CIDRMask(8, 32)
+	r = create_radix_test()
+	n = r.IPv4Get(ipn)
+	r.Delete(n)
+	browse(t, r)
+
+	ipn = &net.IPNet{}
+	ipn.IP = net.ParseIP("10.0.0.0")
+	ipn.Mask = net.CIDRMask(10, 32)
+	r = create_radix_test()
+	n = r.IPv4Get(ipn)
+	r.Delete(n)
+	browse(t, r)
+
+	ipn = &net.IPNet{}
+	ipn.IP = net.ParseIP("10.64.0.0")
+	ipn.Mask = net.CIDRMask(10, 32)
+	r = create_radix_test()
+	n = r.IPv4Get(ipn)
+	r.Delete(n)
+	browse(t, r)
+
+	ipn = &net.IPNet{}
+	ipn.IP = net.ParseIP("10.64.0.0")
+	ipn.Mask = net.CIDRMask(9, 32)
+	r = create_radix_test()
+	n = r.IPv4Get(ipn)
+	r.Delete(n)
+	browse(t, r)
+
+	ipn = &net.IPNet{}
+	ipn.IP = net.ParseIP("10.64.0.0")
+	ipn.Mask = net.CIDRMask(11, 32)
+	r = create_radix_test()
+	n = r.IPv4Get(ipn)
+	r.Delete(n)
+	browse(t, r)
+
+	ipn = &net.IPNet{}
+	ipn.IP = net.ParseIP("10.96.0.0")
+	ipn.Mask = net.CIDRMask(11, 32)
+	r = create_radix_test()
+	n = r.IPv4Get(ipn)
+	r.Delete(n)
+	browse(t, r)
+
+	ipn = &net.IPNet{}
+	ipn.IP = net.ParseIP("100.0.0.0")
+	ipn.Mask = net.CIDRMask(24, 32)
+	r = create_radix_test()
+	n = r.IPv4Get(ipn)
+	r.Delete(n)
+	browse(t, r)
+
+	ipn = &net.IPNet{}
+	ipn.IP = net.ParseIP("100.0.0.0")
+	ipn.Mask = net.CIDRMask(15, 32)
+	r = create_radix_test()
+	n = r.IPv4Get(ipn)
+	r.Delete(n)
+	browse(t, r)
+
+	ipn = &net.IPNet{}
+	ipn.IP = net.ParseIP("100.7.0.0")
+	ipn.Mask = net.CIDRMask(24, 32)
+	r = create_radix_test()
+	n = r.IPv4Get(ipn)
+	r.Delete(n)
+	browse(t, r)
+
+	ipn = &net.IPNet{}
+	ipn.IP = net.ParseIP("100.7.0.0")
+	ipn.Mask = net.CIDRMask(15, 32)
+	r = create_radix_test()
+	n = r.IPv4Get(ipn)
+	r.Delete(n)
+	browse(t, r)
+
 }
 
 func Test_Equal(t *testing.T) {
