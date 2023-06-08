@@ -375,6 +375,8 @@ func (r *Radix)replace(o *node, n *node) {
 		} else {
 			replace_node.Right = r.n2r(n)
 		}
+	} else {
+		r.Node = r.n2r(n)
 	}
 
 	if n.Left != null {
