@@ -111,6 +111,21 @@ func (r *Radix)DebugStdout() {
 	r.Debug(os.Stdout)
 }
 
+func (r *Radix)check_lvl1_and_die_on_error() {
+	var root *node
+
+	if r.Node == null {
+		return
+	}
+	root = r.r2n(r.Node)
+	if root.Left != null && root.End + 1 != r.r2n(root.Left).Start {
+		panic(fmt.Sprintf("root.End=%d, r.r2n(root.Left).Start=%d", root.End, r.r2n(root.Left).Start))
+	}
+	if root.Right != null && root.End + 1 != r.r2n(root.Right).Start {
+		panic(fmt.Sprintf("root.End=%d, r.r2n(root.Right).Start=%d", root.End, r.r2n(root.Right).Start))
+	}
+}
+
 // Len return the number of leaf in the tree.
 func (r *Radix)Len()(int) {
 	return r.length
