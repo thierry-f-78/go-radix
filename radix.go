@@ -2,8 +2,13 @@
 
 package radix
 
+import "encoding/hex"
 import "fmt"
+import "io"
+import "net"
+import "os"
 import "reflect"
+import "strings"
 import "unsafe"
 
 /* This is a tree node. */
@@ -49,6 +54,61 @@ func NewRadix()(*Radix) {
 	radix.length = 0
 
 	return radix
+}
+
+func display_node(fh io.Writer, r *Radix, n *node, ref uint32, level int, branch string) {
+	var typ string
+	var ip net.IPNet
+	var b []byte
+	var indent string
+	var key string
+
+	if is_leaf(ref) {
+		typ = "LEAF"
+	} else {
+		typ = "NODE"
+	}
+
+	indent = strings.Repeat("   ", level)
+
+	if len(n.Bytes) <= 4 && n.End <= 32 {
+		b = make([]byte, len(n.Bytes))
+		copy(b, []byte(n.Bytes))
+		for len(b) < 4 {
+			b = append([]byte{0x00}, b...)
+		}
+		ip.IP = net.IP(b)
+		ip.Mask = net.CIDRMask(int(n.End) + 1, 32)
+		key = ip.String()
+	} else {
+		key = hex.EncodeToString([]byte(n.Bytes))
+	}
+
+	fmt.Fprintf(fh, "%s%s: %p(%08x)/%s start=%d end=%d key=%s\n", indent, branch, n, ref, typ, n.Start, n.End, key)
+}
+
+func browse_node(fh io.Writer, r *Radix, n *node, ref uint32, level int, branch string) {
+	display_node(fh, r, n, ref, level, branch)
+	if n.Left != null {
+		browse_node(fh, r, r.r2n(n.Left), n.Left, level+1, "L")
+	}
+	if n.Right != null {
+		browse_node(fh, r, r.r2n(n.Right), n.Right, level+1, "R")
+	}
+}
+
+func (r *Radix)Debug(fh io.Writer) {
+
+	if r.Node == null {
+		fmt.Fprintf(fh, "root pointer nil\n")
+		return
+	}
+
+	browse_node(fh, r, r.r2n(r.Node), r.Node, 0, "-")
+}
+
+func (r *Radix)DebugStdout() {
+	r.Debug(os.Stdout)
 }
 
 // Len return the number of leaf in the tree.

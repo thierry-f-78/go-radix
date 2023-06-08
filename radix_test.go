@@ -14,46 +14,6 @@ import "strings"
 import "testing"
 import "time"
 
-//lint:ignore U1000 on demand function for debug
-func display_node(r *Radix, n *node, ref uint32, level int, branch string) {
-	var typ string
-	var ip net.IPNet
-	var b []byte
-
-	if is_leaf(ref) {
-		typ = "LEAF"
-	} else {
-		typ = "NODE"
-	}
-
-	b = []byte(n.Bytes)
-	for len(b) < 4 {
-		b = append([]byte{0x00}, b...)
-	}
-	ip.IP = net.IP(b)
-	ip.Mask = net.CIDRMask(int(n.End) + 1, 32)
-
-	fmt.Printf("%s%s: %p(%08x)/%s start=%d end=%d ip=%s\n", strings.Repeat("   ", level), branch, n, ref, typ, n.Start, n.End, ip.String())
-	if n.Left != null {
-		display_node(r, r.r2n(n.Left), n.Left, level+1, "L")
-	}
-	if n.Right != null {
-		display_node(r, r.r2n(n.Right), n.Right, level+1, "R")
-	}
-
-}
-
-//lint:ignore U1000 on demand function for debug
-func display_radix(r *Radix) {
-
-	if r.Node == null {
-		fmt.Printf("root pointer nil\n")
-		return
-	}
-
-	display_node(r, r.r2n(r.Node), r.Node, 0, "-")
-}
-
 func TestRadix(t *testing.T) {
 	/*
 	var r *Radix
@@ -602,6 +562,28 @@ func Test_Radix(t *testing.T) {
 	r.Delete(n)
 	browse(t, r)
 
+}
+
+func Test_Radix_random(t *testing.T) {
+	var r *Radix
+	var k []byte = make([]byte, 2)
+	var n *Node
+	var i int
+
+	r = NewRadix()
+
+	for i = 0; i < 10000000; i++ {
+		k[0] = byte(rand.Intn(256))
+		k[1] = byte(rand.Intn(4)) << 6
+		if rand.Intn(1) == 0 {
+			r.Insert(&k, int16(rand.Intn(11)), "test")
+		} else {
+			n = r.LookupLonguest(&k, int16(rand.Intn(11)))
+			if n != nil {
+				r.Delete(n)
+			}
+		}
+	}
 }
 
 func Test_Equal(t *testing.T) {

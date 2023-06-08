@@ -2,42 +2,7 @@
 
 package radix
 
-import "fmt"
-import "strings"
 import "testing"
-
-//lint:ignore U1000 On demand function for debug
-func display_node_string(r *Radix, n *node, level int, branch string) {
-	var typ string
-	var ref uint32
-
-	ref = r.n2r(n)
-	if is_leaf(ref) {
-		typ = "LEAF"
-	} else {
-		typ = "NODE"
-	}
-
-	fmt.Printf("%s%s: %p/%s start=%d end=%d key=%q/%d\n", strings.Repeat("   ", level), branch, n, typ, n.Start, n.End, string(n.Bytes), n.End + 1)
-	if n.Left != null {
-		display_node_string(r, r.r2n(n.Left), level+1, "L")
-	}
-	if n.Right != null {
-		display_node_string(r, r.r2n(n.Right), level+1, "R")
-	}
-
-}
-
-//lint:ignore U1000 On demand function for debug
-func display_radix_string(r *Radix) {
-
-	if r.Node == null {
-		fmt.Printf("root pointer nil\n")
-		return
-	}
-
-	display_node_string(r, r.r2n(r.Node), 0, "-")
-}
 
 func Test_string(t *testing.T) {
 	var r *Radix
