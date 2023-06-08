@@ -155,7 +155,7 @@ func (r *Radix)add_range(start uintptr, end uintptr, index int, kind int) {
 	var insert_data []ptr_range
 
 	if start >= end {
-		return
+		panic("start >= end")
 	}
 
 	insert_data = []ptr_range{ptr_range{
@@ -177,10 +177,10 @@ func (r *Radix)add_range(start uintptr, end uintptr, index int, kind int) {
 		} else if start > r.ptr_range[pivot].end {
 			left = pivot + 1
 		} else {
-			return
+			panic("cannot insert range")
 		}
 		if left > right {
-			return
+			panic("cannot insert range")
 		}
 	}
 }
@@ -201,7 +201,7 @@ func (r *Radix)n2r(n *node)(uint32) {
 	p = uintptr(unsafe.Pointer(n))
 	right = len(r.ptr_range)
 	if right == 0 {
-		return 0
+		panic("unknown ref")
 	}
 	for {
 		if left == right {
@@ -220,7 +220,7 @@ func (r *Radix)n2r(n *node)(uint32) {
 			break
 		}
 		if left > right {
-			return 0
+			panic("unknown ref")
 		}
 	}
 	if kind == kind_node {
