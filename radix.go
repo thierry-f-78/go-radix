@@ -133,16 +133,16 @@ func (r *Radix)Len()(int) {
 
 // Node_counters describe tree node/leaf counters
 type Node_counters struct {
-	Capacity int // the total nodes/leaf capacity
-	Free int // the number of free nodes/leaf
-	Size int // the size of a node/leaf in bytes
+	Capacity int `json:"capacity"` // the total nodes/leaf capacity
+	Free int `json:"free"` // the number of free nodes/leaf
+	Size int `json:"size"` // the size of a node/leaf in bytes
 }
 
 // Node_counters describe tree counters
 type Counters struct {
-	Length int // Number of leaf used in the tree
-	Node Node_counters // Counters relative to nodes
-	Leaf Node_counters // counters relative to leaf.
+	Length int `json:"length"` // Number of leaf used in the tree
+	Node Node_counters `json:"node"` // Counters relative to nodes
+	Leaf Node_counters `json:"leaf"` // counters relative to leaf.
 }
 
 // Counters return counters useful to monitor the radix tree
