@@ -1,3 +1,5 @@
+[![GoDoc](https://pkg.go.dev/badge/github.com/thierry-f-78/go-radix)](https://pkg.go.dev/github.com/thierry-f-78/go-radix)
+
 # Radix package provide radix algorithm.
 
 _https://en.wikipedia.org/wiki/Radix_tree_
