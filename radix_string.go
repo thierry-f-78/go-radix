@@ -3,6 +3,9 @@
 package radix
 
 func string_to_key(str string)([]byte, int16) {
+	if len(str) * 8 > 32767 {
+		return nil, 0
+	}
 	return []byte(str), int16(len(str)) * 8
 }
 
