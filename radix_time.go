@@ -26,6 +26,27 @@ func (r *Radix)TimeGet(value time.Time)(*Node) {
 	return r.Get(&key, time_length)
 }
 
+// TimeLookupLonguest get the bigger time close from the key Return nil if none match.
+func (r *Radix)TimeLookupLonguestGe(value time.Time)(*Node) {
+	var key []byte
+	var n *Node
+	var date time.Time
+
+	/* Get the network width. width of 0 id prohibited */
+	key = time_to_key(value)
+
+	/* Perform lookup */
+	n = r.LookupLonguest(&key, time_length)
+	if n == nil {
+		return nil
+	}
+	date = n.TimeGetValue()
+	if date.Equal(value) || date.After(value) {
+		return n
+	}
+	return r.Next(n)
+}
+
 // TimeInsert time.Time prefix in the tree. The tree accept only unique value, if
 // the prefix already exists in the tree, return existing leaf,
 // otherwise return nil. Note the tree precision is microsecond
