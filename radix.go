@@ -739,6 +739,76 @@ func (r *Radix)next(n *node)(*Node) {
 	}
 }
 
+/*
+ *  ()        ()
+ *    \      /
+ *    L \  / R
+ *       ()        ()
+ *       P \      /
+ *           \  /
+ *            ()
+ */
+
+// Next return next Node in browsing order. Return nil
+// if we reach end of tree.
+func (r *Radix)Prev(n *Node)(*Node) {
+	return r.prev(&n.node)
+}
+
+func (r *Radix)prev(n *node)(*Node) {
+	var prev_ref uint32
+	var ref uint32
+
+	prev_ref = null
+	ref = r.n2r(n)
+
+	for {
+		if prev_ref == n.Parent || prev_ref == null {
+			/* we come from parent, go right, left and them parent */
+			prev_ref = ref
+			if n.Right != null {
+				ref = n.Right
+				n = r.r2n(n.Right)
+			} else if n.Left != null {
+				ref = n.Left
+				n = r.r2n(n.Left)
+			} else if n.Parent != null {
+				ref = n.Parent
+				n = r.r2n(n.Parent)
+			}
+		} else if prev_ref == n.Right {
+			/* we come from right branch, go left or go back */
+			prev_ref = ref
+			if n.Left != null {
+				ref = n.Left
+				n = r.r2n(n.Left)
+			} else if n.Parent != null {
+				ref = n.Parent
+				n = r.r2n(n.Parent)
+			}
+		} else if prev_ref == n.Left {
+			/* we come from left branch, we go back */
+			prev_ref = ref
+			if n.Parent != null {
+				ref = n.Parent
+				n = r.r2n(n.Parent)
+			}
+		}
+
+		/* None match, this is the end */
+		if ref == prev_ref {
+			return nil
+		}
+
+		/* If we reach leaf, and I'n not com from parent, return node */
+		if is_leaf(ref) && prev_ref == n.Parent {
+			return n2N(n)
+		}
+
+		/* Otherwise continue browsing */
+	}
+}
+
 // First return first node of the tree. Return nil if the
 // tree is empty.
 func (r *Radix)First()(*Node) {
