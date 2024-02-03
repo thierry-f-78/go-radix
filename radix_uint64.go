@@ -13,6 +13,32 @@ func uint64_to_key(value uint64)([]byte) {
 	return bytes[:]
 }
 
+// In the case of any entry match, UInt64LookupGe return the greater or equal
+// closest value of the key. If the tree is empty or greater value not exists,
+// return nil
+func (r *Radix)UInt64LookupGe(value uint64)(*Node) {
+	var key []byte
+
+	/* Get the network width. width of 0 id prohibited */
+	key = uint64_to_key(value)
+
+	/* Perform lookup */
+	return r.LookupGe(&key, length)
+}
+
+// In the case of any entry match, UInt64LookupGe return the lesser or equal
+// closest value of the key. If the tree is empty or lesser value not exists,
+// return nil
+func (r *Radix)UInt64LookupLe(value uint64)(*Node) {
+	var key []byte
+
+	/* Get the network width. width of 0 id prohibited */
+	key = uint64_to_key(value)
+
+	/* Perform lookup */
+	return r.LookupLe(&key, length)
+}
+
 // UInt64Get gets a uint64 prefix and return exact match of the prefix. Exact match
 // is a node wich match the prefix bit and the length.
 func (r *Radix)UInt64Get(value uint64)(*Node) {

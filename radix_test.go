@@ -14,6 +14,172 @@ import "strings"
 import "testing"
 import "time"
 
+const k01 uint64 = 1131019822418697443
+const k02 uint64 = 1175380425885048657
+const k03 uint64 = 1251106742133914393
+const k04 uint64 = 1324145836982586833
+const k05 uint64 = 1372878349645637030
+const k06 uint64 = 1387052462119460307
+const k07 uint64 = 1408497277023489713
+const k08 uint64 = 1439343199344802083
+const k09 uint64 = 1496499867951575045
+const k10 uint64 = 1639463728848710507
+const k11 uint64 = 1671437692678224497
+const k12 uint64 = 1743139505900320541
+const k13 uint64 = 1787682448534325190
+const k14 uint64 = 1820895207709845513
+const k15 uint64 = 2934410283710120156
+const k16 uint64 = 3474165364659858383
+const k17 uint64 = 4601851300195147788
+const k18 uint64 = 4941403589015381345
+const k19 uint64 = 5222186584675971744
+const k20 uint64 = 6944748764434883275
+
+var v01 string = strconv.Itoa(int(k01))
+var v02 string = strconv.Itoa(int(k02))
+var v03 string = strconv.Itoa(int(k03))
+var v04 string = strconv.Itoa(int(k04))
+var v05 string = strconv.Itoa(int(k05))
+var v06 string = strconv.Itoa(int(k06))
+var v07 string = strconv.Itoa(int(k07))
+var v08 string = strconv.Itoa(int(k08))
+var v09 string = strconv.Itoa(int(k09))
+var v10 string = strconv.Itoa(int(k10))
+var v11 string = strconv.Itoa(int(k11))
+var v12 string = strconv.Itoa(int(k12))
+var v13 string = strconv.Itoa(int(k13))
+var v14 string = strconv.Itoa(int(k14))
+var v15 string = strconv.Itoa(int(k15))
+var v16 string = strconv.Itoa(int(k16))
+var v17 string = strconv.Itoa(int(k17))
+var v18 string = strconv.Itoa(int(k18))
+var v19 string = strconv.Itoa(int(k19))
+var v20 string = strconv.Itoa(int(k20))
+
+
+
+func TestLookupGe(t *testing.T) {
+	var r *Radix
+	var n *Node
+	var do_dump bool
+
+	r = NewRadix()
+
+	n = r.UInt64LookupGe(k10)
+	if n != nil {
+		t.Errorf("Expect nil, got %d\n", n.Data.(uint64))
+	}
+
+	r.UInt64Insert(k01, v01)
+	r.UInt64Insert(k02, v02)
+	r.UInt64Insert(k03, v03)
+	r.UInt64Insert(k04, v04)
+	r.UInt64Insert(k05, v05)
+	r.UInt64Insert(k06, v06)
+	r.UInt64Insert(k07, v07)
+	r.UInt64Insert(k08, v08)
+	r.UInt64Insert(k09, v09)
+	r.UInt64Insert(k10, v10)
+	r.UInt64Insert(k11, v11)
+	r.UInt64Insert(k12, v12)
+	r.UInt64Insert(k13, v13)
+	r.UInt64Insert(k14, v14)
+	r.UInt64Insert(k15, v15)
+	r.UInt64Insert(k16, v16)
+	r.UInt64Insert(k17, v17)
+	r.UInt64Insert(k18, v18)
+	r.UInt64Insert(k19, v19)
+	r.UInt64Insert(k20, v20)
+
+	n = r.UInt64LookupGe(k01 - 1)
+	if n == nil {
+		do_dump = true
+		t.Errorf("Req %d (%x), expect %q (%x), got nil\n", k01 - 1, k01 - 1, v01, k01)
+	} else if n.Data.(string) != v01 {
+		do_dump = true
+		t.Errorf("Req %d (%x), expect %q (%x), got %q (%x)\n", k01 - 1, k01 - 1, v01, k01, n.Data.(string), n.UInt64GetValue())
+	}
+
+	n = r.UInt64LookupGe(k10)
+	if n == nil {
+		do_dump = true
+		t.Errorf("Req %d (%x), expect %q (%x), got nil\n", k10, k10, v10, k10)
+	} else if n.Data.(string) != v10 {
+		do_dump = true
+		t.Errorf("Req %d (%x), expect %q (%x), got %q (%x)\n", k10, k10, v10, k10, n.Data.(string), n.UInt64GetValue())
+	}
+
+	n = r.UInt64LookupGe(k10 - 1)
+	if n == nil {
+		do_dump = true
+		t.Errorf("Req %d (%x), expect %q (%x), got nil\n", k10 - 1, k10 - 1, v10, k10)
+	} else if n.Data.(string) != v10 {
+		do_dump = true
+		t.Errorf("Req %d (%x), expect %q (%x), got %q (%x)\n", k10 - 1, k10 - 1, v10, k10, n.Data.(string), n.UInt64GetValue())
+	}
+
+	n = r.UInt64LookupGe(k10 + 1)
+	if n == nil {
+		do_dump = true
+		t.Errorf("Req %d (%x), expect %q (%x), got nil\n", k10 + 1, k10 + 1, v11, k11)
+	} else if n.Data.(string) != v11 {
+		do_dump = true
+		t.Errorf("Req %d (%x), expect %q (%x), got %q (%x)\n", k10 + 1, k10 + 1, v11, k11, n.Data.(string), n.UInt64GetValue())
+	}
+
+	n = r.UInt64LookupGe(k20 + 1)
+	if n != nil {
+		do_dump = true
+		t.Errorf("Req %d (%x), expect nil, got %q (%x)\n", k20 + 1, k20 + 1, n.Data.(string), n.UInt64GetValue())
+	}
+
+	n = r.UInt64LookupLe(k20 + 1)
+	if n == nil {
+		do_dump = true
+		t.Errorf("Req %d (%x), expect %q (%x), got nil\n", k20 + 1, k20 + 1, v20, k20)
+	} else if n.Data.(string) != v20 {
+		do_dump = true
+		t.Errorf("Req %d (%x), expect %q (%x), got %q (%x)\n", k20 + 1, k20 + 1, v20, k20, n.Data.(string), n.UInt64GetValue())
+	}
+
+	n = r.UInt64LookupLe(k10)
+	if n == nil {
+		do_dump = true
+		t.Errorf("Req %d (%x), expect %q (%x), got nil\n", k10, k10, v10, k10)
+	} else if n.Data.(string) != v10 {
+		do_dump = true
+		t.Errorf("Req %d (%x), expect %q (%x), got %q (%x)\n", k10, k10, v10, k10, n.Data.(string), n.UInt64GetValue())
+	}
+
+	n = r.UInt64LookupLe(k10 - 1)
+	if n == nil {
+		do_dump = true
+		t.Errorf("Req %d (%x), expect %q (%x), got nil\n", k10 - 1, k10 - 1, v09, k09)
+	} else if n.Data.(string) != v09 {
+		do_dump = true
+		t.Errorf("Req %d (%x), expect %q (%x), got %q (%x)\n", k10 - 1, k10 - 1, v09, k09, n.Data.(string), n.UInt64GetValue())
+	}
+
+	n = r.UInt64LookupLe(k10 + 1)
+	if n == nil {
+		do_dump = true
+		t.Errorf("Req %d (%x), expect %q (%x), got nil\n", k10 + 1, k10 + 1, v10, k10)
+	} else if n.Data.(string) != v10 {
+		do_dump = true
+		t.Errorf("Req %d (%x), expect %q (%x), got %q (%x)\n", k10 + 1, k10 + 1, v10, k10, n.Data.(string), n.UInt64GetValue())
+	}
+
+	n = r.UInt64LookupLe(k01 - 1)
+	if n != nil {
+		do_dump = true
+		t.Errorf("Req %d (%x), expect nil, got %q (%x)\n", k01 - 1, k01 - 1, n.Data.(string), n.UInt64GetValue())
+	}
+
+	if do_dump {
+		r.DebugStdout()
+	}
+}
+
 func TestRadix(t *testing.T) {
 	/*
 	var r *Radix

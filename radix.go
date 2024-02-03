@@ -2,6 +2,7 @@
 
 package radix
 
+import "bytes"
 import "encoding/hex"
 import "fmt"
 import "io"
@@ -318,6 +319,66 @@ func (r *Radix)LookupLonguest(data *[]byte, length int16)(*Node) {
 			ref = node.Left
 			node = r.r2n(node.Left)
 		}
+	}
+}
+
+// In the case of any entry match, LookupGe return the greater or equal
+// closest value of the key. This is usefull for constant prefix keys
+// like keys derivated from uint64 or time. If the tree is empty or greater
+// value not exists, return nil
+func (r *Radix)LookupGe(data *[]byte, length int16)(*Node) {
+	var node_c *node
+	var n *Node
+	var ref uint32
+
+	node_c, ref = lookup_longuest_last_node(r, *data, length)
+	if ref == null {
+		return nil
+	}
+	node_c = r.r2n(node_c.Parent)
+	if node_c != nil {
+		n = r.next(node_c)
+	} else {
+		n = r.First() // No parent, get the first node
+	}
+	for {
+		if n == nil {
+			return nil
+		}
+		if bytes.Compare(*data, []byte(n.node.Bytes)) <= 0 { // if input LE node
+			return n
+		}
+		n = r.Next(n)
+	}
+}
+
+// In the case of any entry match, LookupLe return the lesser or equal
+// closest value of the key. This is usefull for constant prefix keys
+// like keys derivated from uint64 or time. If the tree is empty or lesser
+// value not exists, return nil
+func (r *Radix)LookupLe(data *[]byte, length int16)(*Node) {
+	var node_c *node
+	var n *Node
+	var ref uint32
+
+	node_c, ref = lookup_longuest_last_node(r, *data, length)
+	if ref == null {
+		return nil
+	}
+	node_c = r.r2n(node_c.Parent)
+	if node_c != nil {
+		n = r.prev(node_c)
+	} else {
+		n = r.Last() // No parent, get the last node
+	}
+	for {
+		if n == nil {
+			return nil
+		}
+		if bytes.Compare(*data, []byte(n.node.Bytes)) >= 0 { // if input LE node
+			return n
+		}
+		n = r.Prev(n)
 	}
 }
 
